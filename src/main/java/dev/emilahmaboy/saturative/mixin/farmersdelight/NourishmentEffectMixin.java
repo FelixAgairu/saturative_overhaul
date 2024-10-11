@@ -1,7 +1,5 @@
 package dev.emilahmaboy.saturative.mixin.farmersdelight;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -10,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.injection.*;
 
 
 @Pseudo
@@ -25,11 +22,7 @@ public class NourishmentEffectMixin extends StatusEffect {
      * @reason Saturative mod needs for some changes in NourishmentEffect
      */
     @Overwrite
-    public
-    //? if <1.20.6 {
-    void
-    //?} else
-    /*boolean*/
+    public boolean
     applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (!entity.getEntityWorld().isClient && entity instanceof PlayerEntity player) {
             HungerManager foodData = player.getHungerManager();
@@ -53,9 +46,6 @@ public class NourishmentEffectMixin extends StatusEffect {
                 }
             }
         }
-        //? if >=1.20.6
-        /*
         return true;
-        */
     }
 }

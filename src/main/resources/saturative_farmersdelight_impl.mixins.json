@@ -2,8 +2,10 @@
   "required": false,
   "minVersion": "0.8",
   "package": "dev.emilahmaboy.saturative.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "PlayerManagerMixin",
+    "ServerPlayerEntityMixin",
     "farmersdelight.NourishmentEffectMixin"
   ],
   "client": [

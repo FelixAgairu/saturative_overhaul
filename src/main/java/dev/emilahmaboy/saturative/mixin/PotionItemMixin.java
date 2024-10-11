@@ -1,29 +1,20 @@
 package dev.emilahmaboy.saturative.mixin;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-//? if <1.20.6 {
-import net.minecraft.potion.PotionUtil;
-//?} else
-/*
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.PotionContentsComponent;
-*/
+import net.minecraft.item.PotionItem;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Iterator;
-import java.util.List;
-
-import net.minecraft.item.PotionItem;
 
 @Mixin(PotionItem.class)
 public class PotionItemMixin {
@@ -38,22 +29,13 @@ public class PotionItemMixin {
             float exhaustion = 6.0F;
             int duration = 100;
             int amplifier = 1;
-            //? if <1.20.6 {
-            List<StatusEffectInstance> list = PotionUtil.getPotionEffects(stack);
-            for (StatusEffectInstance statusEffectInstance : list) {
-                duration = getDuration(statusEffectInstance, duration);
-                amplifier = getAmplifier(statusEffectInstance, amplifier);
-                exhaustion = getExhaustion(statusEffectInstance, exhaustion);
-            }
-            //?} else
-            /*
-            PotionContentsComponent potionContentsComponent = (PotionContentsComponent) stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+            
+			PotionContentsComponent potionContentsComponent = (PotionContentsComponent) stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
             for (StatusEffectInstance effect : potionContentsComponent.getEffects()) {
                 duration = getDuration(effect, duration);
                 amplifier = getAmplifier(effect, amplifier);
                 exhaustion = getExhaustion(effect, exhaustion);
             }
-            */
 
             HungerManager hungerManager = player.getHungerManager();
             int foodLevel = hungerManager.getFoodLevel();

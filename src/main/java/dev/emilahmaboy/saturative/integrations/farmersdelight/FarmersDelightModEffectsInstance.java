@@ -3,7 +3,6 @@ package dev.emilahmaboy.saturative.integrations.farmersdelight;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.util.Iterator;
 import java.util.ServiceLoader;
 
 public class FarmersDelightModEffectsInstance {;

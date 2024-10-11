@@ -1,6 +1,7 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'maven-publish'
+    id 'org.gradle.wrapper'
 }
 
 version = project.mod_version
@@ -27,6 +28,7 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    maven { url "https://maven.ryanliptak.com/" }
 }
 
 dependencies {
@@ -38,13 +40,11 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    modImplementation "squeek.appleskin:appleskin-fabric:mc${project.appleskin_version}"
+
     modCompileOnlyApi "maven.modrinth:farmers-delight-refabricated:${project.farmers_delight_version}"
 
-
-    modCompileOnlyApi "maven.modrinth:appleskin:${project.appleskin_version}"
-    modCompileOnlyApi "maven.modrinth:sleep-tight:1.20-1.1.19"
-
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.6")))
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
 }
 
 processResources {
@@ -60,7 +60,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly

@@ -1,7 +1,5 @@
 package dev.emilahmaboy.saturative.api;
 
-import net.minecraft.entity.player.HungerManager;
-
 public class HungerManagerValues {
     public static final int maxFoodLevel = 400;
     public static final int defaultFoodLevel = 160;

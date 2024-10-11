@@ -1,21 +1,24 @@
 package dev.emilahmaboy.saturative.mixin;
 
 import dev.emilahmaboy.saturative.api.HungerManagerValues;
+import dev.emilahmaboy.saturative.integrations.farmersdelight.FarmersDelightModEffectsInstance;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import dev.emilahmaboy.saturative.integrations.farmersdelight.FarmersDelightModEffectsInstance;
-
-import net.minecraft.client.gui.hud.InGameHud;
 
 import static dev.emilahmaboy.saturative.api.HungerManagerValues.foodBarDelta;
 import static dev.emilahmaboy.saturative.api.HungerManagerValues.foodBarSize;
@@ -27,15 +30,10 @@ public abstract class InGameHudMixin {
 
     @Shadow protected abstract PlayerEntity getCameraPlayer();
 
-    //? if =1.20.1 {
-    @Shadow @Final private static Identifier ICONS;
-    //?} else
-    /*
     @Shadow @Final private static Identifier FOOD_EMPTY_TEXTURE;
     @Shadow @Final private static Identifier FOOD_FULL_TEXTURE;
     @Shadow @Final private static Identifier FOOD_EMPTY_HUNGER_TEXTURE;
     @Shadow @Final private static Identifier FOOD_FULL_HUNGER_TEXTURE;
-    */
 
     @Shadow @Final private Random random;
 
@@ -44,56 +42,10 @@ public abstract class InGameHudMixin {
     private static Identifier MOD_ICONS_TEXTURE;
     static {
         if (FabricLoader.getInstance().isModLoaded("farmersdelight")) {
-            //? if <1.21 {
-            MOD_ICONS_TEXTURE = new Identifier("farmersdelight", "textures/gui/fd_icons.png");
-            //?} else
-            /*
             MOD_ICONS_TEXTURE = Identifier.of("farmersdelight", "textures/gui/fd_icons.png");
-            */
         }
     }
 
-    //? if <1.20.6 {
-    @Shadow private int scaledWidth;
-
-    @Shadow private int scaledHeight;
-
-    @Inject(
-            method = "renderStatusBars",
-            slice = @Slice(
-                    from = @At(
-                            value = "INVOKE",
-                            target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"
-                    )
-            ),
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V",
-                    ordinal = 0,
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void renderFoodBar(DrawContext context, CallbackInfo ci) {
-        renderFood(context, this.getCameraPlayer(), this.scaledHeight - 39, this.scaledWidth / 2 + 91);
-    }
-    @ModifyConstant(
-            method = "renderStatusBars",
-            slice = @Slice(
-                    from = @At(
-                            value = "INVOKE",
-                            target = "Lnet/minecraft/client/gui/hud/InGameHud;getHeartCount(Lnet/minecraft/entity/LivingEntity;)I"
-                    )
-            ),
-            constant = @Constant(
-                    intValue = 10,
-                    ordinal = 0
-            )
-    )
-    private int noFoodBarRender(int ignored) {
-        return 0;
-    }
-    //?} else
-    /*
     @Inject(method = "renderFood", at = @At("HEAD"))
     private void renderFoodBar(DrawContext context, PlayerEntity player, int top, int right, CallbackInfo ci) {
         renderFood(context, this.getCameraPlayer(), top, right);
@@ -109,7 +61,6 @@ public abstract class InGameHudMixin {
     private int noFoodBarRender(int ignored) {
         return 0;
     }
-    */
 
     @Unique
     private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {
@@ -125,16 +76,6 @@ public abstract class InGameHudMixin {
         int vEmpty;
         boolean isUV;
 
-        //? if <1.20.4 {
-        iconsFull = ICONS;
-        iconsEmpty = ICONS;
-        uFull = 52;
-        uEmpty = 16;
-        vFull = 27;
-        vEmpty = 27;
-        isUV = true;
-        //?} else {
-        /*
         iconsFull = FOOD_FULL_TEXTURE;
         iconsEmpty = FOOD_EMPTY_TEXTURE;
         uFull = 0;
@@ -142,17 +83,12 @@ public abstract class InGameHudMixin {
         vFull = 0;
         vEmpty = 0;
         isUV = false;
-        */
-        //?}
 
 
         if (FarmersDelightModEffectsInstance.getInstance().hasNourishmentEffect(player)) {
             iconsFull = MOD_ICONS_TEXTURE;
             iconsEmpty = MOD_ICONS_TEXTURE;
             uFull = 18 + ((foodLevel >= 280.0F || (foodLevel > 120.0F && (hungerManager.getSaturationLevel() <= 1.0F || hungerManager.getSaturationLevel() > 3.0F))) ? 18 : 0);
-            uEmpty = 0;
-            vFull = 0;
-            vEmpty = 0;
             isUV = true;
         }
 
@@ -171,24 +107,12 @@ public abstract class InGameHudMixin {
             int x = rightEdge - foodBarDelta * i;
             // Hunger
             if (player.hasStatusEffect(StatusEffects.HUNGER)) {
-                //? if <1.20.4 {
-                if (iconsFull == ICONS) {
-                    _uFull += 36;
-                    _uEmpty = 16 + 13 * 9;
-                }
-                //?} else {
-                /*
                 if (iconsFull == FOOD_FULL_TEXTURE) {
                     iconsFull = FOOD_FULL_HUNGER_TEXTURE;
                     iconsEmpty = FOOD_EMPTY_HUNGER_TEXTURE;
                     uFull = 0;
-                    uEmpty = 0;
-                    vFull = 0;
-                    vEmpty = 0;
                     isUV = false;
                 }
-                */
-                //?}
             }
             this.drawFoodIcon(context, iconsEmpty, x, y, _uEmpty, _vEmpty, 9, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
 
@@ -227,18 +151,14 @@ public abstract class InGameHudMixin {
     @Unique
     private void drawFoodIcon(DrawContext context, Identifier icon, int x, int y, int u, int v, int width, int height, float r, float g, float b, float a, boolean isUV) {
         context.setShaderColor(r, g, b, a);
-        //? if <1.20.4 {
-        context.drawTexture(icon, x, y, u, v, width, height);
-        //?} else
-        /*
-        if (isUV) {
+        
+		if (isUV) {
             context.drawTexture(icon, x, y, u, v, width, height);
         } else {
             context.enableScissor(x, y, x + width, y + height);
             context.drawGuiTexture(icon, x, y, Math.max(width, height), Math.max(width, height));
             context.disableScissor();
         }
-        */
 
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }

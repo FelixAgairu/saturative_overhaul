@@ -22,8 +22,7 @@
   "mixins": [
     "saturative.mixins.json",
     "saturative_farmersdelight_impl.mixins.json",
-    "saturative_appleskin_impl.mixins.json",
-    "saturative_sleeptight_impl.mixins.json"
+    "saturative_appleskin_impl.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
