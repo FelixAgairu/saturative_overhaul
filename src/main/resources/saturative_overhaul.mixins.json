@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.emilahmaboy.felixagairu.saturative_overhaul.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "HungerManagerMixin",
+    "PlayerEntityMixin",
+    "PotionItemMixin",
+    "StatusEffectMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

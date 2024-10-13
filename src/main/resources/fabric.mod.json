@@ -1,32 +1,37 @@
 {
   "schemaVersion": 1,
-  "id": "saturative",
+  "id": "saturative-overhaul",
   "version": "${version}",
-  "name": "Saturative",
-  "description": "This mod changes player hunger and saturation system.",
+  "name": "Saturative Overhaul",
+  "description": "This mod changes player hunger and saturation system. Branch FelixAgairu",
   "authors": [
-    "EmilAhmaBoy"
+    "EmilAhmaBoy",
+    "FelixAgairu"
   ],
-  "contact": {},
-  "license": "unlicense",
-  "icon": "assets/saturative/icon.png",
+  "contact": {
+    "homepage": "",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "MIT",
+  "icon": "assets/saturative_overhaul/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "dev.emilahmaboy.saturative.client.SaturativeClient"
+      "dev.emilahmaboy.felixagairu.saturative_overhaul.client.SaturativeClient"
     ],
     "main": [
-      "dev.emilahmaboy.saturative.Saturative"
+      "dev.emilahmaboy.felixagairu.saturative_overhaul.Saturative"
     ]
   },
   "mixins": [
-    "saturative.mixins.json",
-    "saturative_farmersdelight_impl.mixins.json",
-    "saturative_appleskin_impl.mixins.json"
+    "saturative_overhaul.mixins.json",
+    "saturative_overhaul_appleskin_impl.mixins.json",
+    "saturative_overhaul_farmersdelight_impl.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
+    "java": ">=21",
     "minecraft": "${minecraft_version}"
   }
 }

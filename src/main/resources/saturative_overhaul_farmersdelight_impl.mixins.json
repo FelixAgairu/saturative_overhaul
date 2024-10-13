@@ -1,0 +1,15 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.emilahmaboy.felixagairu.saturative_overhaul.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "farmersdelight.NourishmentEffectMixin"
+  ],
+  "client": [
+    "farmersdelight.NourishmentHungerOverlayMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

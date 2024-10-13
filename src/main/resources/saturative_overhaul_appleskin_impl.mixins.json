@@ -1,0 +1,16 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "dev.emilahmaboy.felixagairu.saturative_overhaul.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "InGameHudMixin",
+    "appleskin.HUDOverlayHandlerMixin",
+    "appleskin.HUDOverlayHandlerMixinOffsetsCache"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
