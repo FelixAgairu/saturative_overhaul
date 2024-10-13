@@ -3,14 +3,14 @@
   "id": "saturative-overhaul",
   "version": "${version}",
   "name": "Saturative Overhaul",
-  "description": "This mod changes player hunger and saturation system. Branch FelixAgairu",
+  "description": "This mod changes player hunger and saturation system. Original Saturative by EmilAhmaBoy, Branch FelixAgairu",
   "authors": [
     "EmilAhmaBoy",
     "FelixAgairu"
   ],
   "contact": {
     "homepage": "",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/FelixAgairu/saturative_overhaul"
   },
   "license": "MIT",
   "icon": "assets/saturative_overhaul/icon.png",
