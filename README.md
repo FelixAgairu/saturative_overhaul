@@ -11,13 +11,13 @@ if (you like this || you like original work) {
 ```
 
 ## Differences
-Only Minecraft version 1.21.1.
-Only Fabric.
-RTL food bar.
-For easy to feed yourself, food's nutrition changes to 4x with little jetter.
-Remove sleeptight support.
-...
+- Only Minecraft version 1.21.1.
+- Only Fabric.
+- RTL food bar.
+- For easy to feed yourself, food's nutrition changes to 4x with little jetter.
+- Remove sleeptight support.
+- ...
 
 ## Bugs
-Apple skin support almost break.
-...
+- Apple skin support almost break.
+- ...
