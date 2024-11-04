@@ -53,7 +53,7 @@ public abstract class PlayerEntityMixin extends Entity {
     private void onPlayerTick(CallbackInfo ci) {
         if (!this.isCreative() && this.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
             tickCounterA++;
-            if (tickCounterA % (int) TheRandom.dTheRandom(80D, (9D / 10D), (7D / 3D)) == 0) {
+            if (tickCounterA % (int) TheRandom.fTheRandom(100F, (9F / 10F), (7F / 3F)) == 0) {
                 int foodValueStorage = this.getHungerManager().getFoodLevel();
                 if (foodValueStorage > 1) {
                     this.getHungerManager().setFoodLevel(foodValueStorage - 1);

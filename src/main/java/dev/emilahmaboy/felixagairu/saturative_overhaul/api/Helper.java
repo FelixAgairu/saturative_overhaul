@@ -8,7 +8,7 @@ public class Helper {
     public static int foodTickTimer;
     public static float foodSaturationLevel;
     public static float foodExhaustionLevel;
-    public static double nutritionModifier = 5.0D;
+    public static float nutritionModifier = 5.0F;
 
     public static void saveNbt(NbtCompound nbt) {
         nbt.putInt("foodLevel", Helper.foodLevel);
