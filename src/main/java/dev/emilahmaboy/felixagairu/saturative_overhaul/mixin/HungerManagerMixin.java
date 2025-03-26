@@ -170,9 +170,9 @@ public abstract class HungerManagerMixin {
 
                     this.foodTickTimer = 0;
                 }
-            } else if (this.foodLevel <= 80 && this.foodLevel > 40) {
+            } else if (this.foodLevel <= 80 && this.foodLevel > 19) {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0, false, false));
-            } else if (this.foodLevel <= 40) {
+            } else if (this.foodLevel <= 19) {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false));
 
                 this.foodTickTimer += 1;

@@ -39,12 +39,12 @@ public abstract class PlayerEntityMixin extends Entity {
         return original;
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     private void nbtSaveCustom(NbtCompound nbt, CallbackInfo ci) {
         Helper.saveNbt(nbt);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void nbtLoadCustom(NbtCompound nbt, CallbackInfo ci) {
         Helper.loadNbt(nbt);
     }
