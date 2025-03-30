@@ -30,6 +30,9 @@ repositories {
         }
     }
     maven { url "https://maven.ryanliptak.com/" }
+
+    // OWO_LIB
+    maven { url 'https://maven.wispforest.io/releases/' }
 }
 
 dependencies {
@@ -40,12 +43,20 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
 
+    // Apple Skin
     modImplementation "squeek.appleskin:appleskin-fabric:mc${project.appleskin_version}"
 
+    // Farmers Delight Refabricated
     modCompileOnlyApi "maven.modrinth:farmers-delight-refabricated:${project.farmers_delight_version}"
 
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
+    // OWO-LIB
+    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+    include "io.wispforest:owo-sentinel:${project.owo_version}"
+
+    // OWO-CONFIG
+    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
 }
 
 processResources {
@@ -108,6 +119,8 @@ publishing {
     }
 }
 
+// Add version number auto increment
+// 增加版本号自动增加
 tasks.register('incrementVersionTask') {
     doLast {
         def propertiesFile = file("gradle.properties")
@@ -123,6 +136,8 @@ tasks.register('incrementVersionTask') {
     }
 }
 
+// Increase version number after build
+// 项目构建完成后增加版本号
 tasks.named('build').configure {
     finalizedBy(tasks.named('incrementVersionTask'))
 }

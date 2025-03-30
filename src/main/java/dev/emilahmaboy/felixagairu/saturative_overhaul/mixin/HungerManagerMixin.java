@@ -1,9 +1,8 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.Helper;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.TheRandom;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.common.registries.DamageTypeRegistry;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.api.SOConfig;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.api.SOConfigModel;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
@@ -18,6 +17,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import dev.emilahmaboy.felixagairu.saturative_overhaul.api.Helper;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.api.TheRandom;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.common.registries.DamageTypeRegistry;
+
 
 
 @Mixin(HungerManager.class)

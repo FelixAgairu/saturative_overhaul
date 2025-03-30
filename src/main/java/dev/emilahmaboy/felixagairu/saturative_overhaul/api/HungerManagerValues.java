@@ -1,5 +1,6 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.api;
 
+
 public class HungerManagerValues {
     public static final int maxFoodLevel = 400;
     public static final int defaultFoodLevel = 160;

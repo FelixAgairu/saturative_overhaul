@@ -1,5 +1,6 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.api;
 
+import dev.emilahmaboy.felixagairu.saturative_overhaul.api.SOConfig;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
@@ -9,6 +10,7 @@ public class Helper {
     public static float foodSaturationLevel;
     public static float foodExhaustionLevel;
     public static float nutritionModifier = 5.0F;
+
 
     public static void saveNbt(NbtCompound nbt) {
         nbt.putInt("foodLevel", Helper.foodLevel);
@@ -26,3 +28,4 @@ public class Helper {
         }
     }
 }
+
