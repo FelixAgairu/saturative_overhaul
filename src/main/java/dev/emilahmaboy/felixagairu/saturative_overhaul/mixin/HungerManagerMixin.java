@@ -122,7 +122,7 @@ public abstract class HungerManagerMixin {
                 }
             }
 
-            if (foodLevel >= (SharedData.foodLevel - SharedData.thresholdHigh) / 2 ) {
+            if (foodLevel >= SharedData.thresholdHigh + (SharedData.foodLevel - SharedData.thresholdHigh) / 2 ) {
                 gainEffect(player, "SLOWNESS",60,1);
                 foodTickTimer += 1;
                 if (foodTickTimer >= (80)) {
@@ -166,8 +166,8 @@ public abstract class HungerManagerMixin {
                     foodTickTimer = 0;
                 }
             } else if (naturalRegenerative && player.canFoodHeal() &&
-                    foodLevel >= (SharedData.thresholdLow - SharedData.thresholdMin) / 2 &&
-                    foodLevel < (SharedData.thresholdMid - SharedData.thresholdLow) / 2) {
+                    foodLevel >= SharedData.thresholdMin + (SharedData.thresholdLow - SharedData.thresholdMin) / 2 &&
+                    foodLevel < SharedData.thresholdLow + (SharedData.thresholdMid - SharedData.thresholdLow) / 2) {
                 foodTickTimer += 1;
                 if (foodTickTimer >= (55)) {
                     player.heal(1);
@@ -176,7 +176,7 @@ public abstract class HungerManagerMixin {
                     foodTickTimer = 0;
                 }
             } else if (foodLevel >= SharedData.thresholdMin &&
-                    foodLevel <= (SharedData.thresholdLow - SharedData.thresholdMin) / 2) {
+                    foodLevel <= SharedData.thresholdMin + (SharedData.thresholdLow - SharedData.thresholdMin) / 2) {
                 gainEffect(player, "SLOWNESS",60,0);
             } else if (foodLevel < SharedData.thresholdMin) {
                 gainEffect(player, "SLOWNESS",60,1);
