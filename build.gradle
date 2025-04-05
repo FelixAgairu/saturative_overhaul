@@ -18,21 +18,12 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
-            }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
-    maven { url "https://maven.ryanliptak.com/" }
 
-    // OWO_LIB
-    maven { url 'https://maven.wispforest.io/releases/' }
+    // Apple Skin
+    maven {
+        name = "Apple Skin"
+        url = "https://maven.ryanliptak.com/"
+    }
 }
 
 dependencies {
@@ -43,27 +34,16 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
 
     // Apple Skin
     modImplementation "squeek.appleskin:appleskin-fabric:mc${project.appleskin_version}"
-
-    // Farmers Delight Refabricated
-    modCompileOnlyApi "maven.modrinth:farmers-delight-refabricated:${project.farmers_delight_version}"
-
-    // OWO-LIB
-    modImplementation "io.wispforest:owo-lib:${project.owo_version}"
-    include "io.wispforest:owo-sentinel:${project.owo_version}"
-
-    // OWO-CONFIG
-    annotationProcessor modImplementation("io.wispforest:owo-lib:${project.owo_version}")
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
-    filteringCharset "UTF-8"
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
@@ -85,19 +65,20 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
+    inputs.property "archivesName", project.base.archivesName
+
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${inputs.properties.archivesName}"}
     }
 }
 
@@ -118,7 +99,6 @@ publishing {
         // retrieving dependencies.
     }
 }
-
 // Add version number auto increment
 // 增加版本号自动增加
 tasks.register('incrementVersionTask') {

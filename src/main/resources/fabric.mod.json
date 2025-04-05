@@ -25,8 +25,7 @@
   },
   "mixins": [
     "saturative_overhaul.mixins.json",
-    "saturative_overhaul_appleskin_impl.mixins.json",
-    "saturative_overhaul_farmersdelight_impl.mixins.json"
+    "saturative_overhaul_appleskin_impl.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

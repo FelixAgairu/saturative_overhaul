@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 
 
 public class DamageTypeRegistry {
-	public static final RegistryKey<DamageType> OVEREATING_DAMAGE_TYPE =
+    public static final RegistryKey<DamageType> OVEREATING_DAMAGE_TYPE =
             RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("saturative_overhaul", "overeating"));
 
     public static DamageSource getSource(World world, RegistryKey<DamageType> key) {

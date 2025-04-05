@@ -1,4 +1,4 @@
-package dev.emilahmaboy.felixagairu.saturative_overhaul.api;
+package dev.emilahmaboy.felixagairu.saturative_overhaul.tools;
 
 
 public class HungerManagerValues {
@@ -50,21 +50,13 @@ public class HungerManagerValues {
         return exhaustionLevel;
     }
 
-    public float getSaturationLevel() {
-        return saturationLevel;
-    }
-
-    public int getFoodLevel() {
-        return foodLevel;
-    }
-
-    public int getFoodTickTimer() {
-        return foodTickTimer;
-    }
-
     public HungerManagerValues setExhaustionLevel(float exhaustionLevel) {
         this.exhaustionLevel = exhaustionLevel;
         return this;
+    }
+
+    public float getSaturationLevel() {
+        return saturationLevel;
     }
 
     public HungerManagerValues setSaturationLevel(float saturationLevel) {
@@ -72,9 +64,17 @@ public class HungerManagerValues {
         return this;
     }
 
+    public int getFoodLevel() {
+        return foodLevel;
+    }
+
     public HungerManagerValues setFoodLevel(int foodLevel) {
         this.foodLevel = foodLevel;
         return this;
+    }
+
+    public int getFoodTickTimer() {
+        return foodTickTimer;
     }
 
     public HungerManagerValues setFoodTickTimer(int foodTickTimer) {

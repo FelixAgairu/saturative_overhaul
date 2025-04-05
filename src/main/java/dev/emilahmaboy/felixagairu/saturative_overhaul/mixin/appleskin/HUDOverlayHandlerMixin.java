@@ -1,7 +1,7 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.mixin.appleskin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.DataComponentTypes;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import squeek.appleskin.ModConfig;
 import squeek.appleskin.helpers.FoodHelper;
 
-import static dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues.maxFoodLevel;
-import static dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues.nutritionModifier;
+import static dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues.maxFoodLevel;
+import static dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues.nutritionModifier;
 
 
 @Pseudo

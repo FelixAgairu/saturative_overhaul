@@ -1,8 +1,8 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.Helper;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.TheRandom;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.LimitRandomizer;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.NbtUpdater;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.HungerManager;
@@ -27,9 +27,11 @@ public abstract class PlayerEntityMixin extends Entity {
         super(type, world);
     }
 
-    @Shadow public abstract HungerManager getHungerManager();
+    @Shadow
+    public abstract HungerManager getHungerManager();
 
-    @Shadow public abstract boolean isCreative();
+    @Shadow
+    public abstract boolean isCreative();
 
     @ModifyReturnValue(
             method = "canConsume",
@@ -41,19 +43,19 @@ public abstract class PlayerEntityMixin extends Entity {
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     private void nbtSaveCustom(NbtCompound nbt, CallbackInfo ci) {
-        Helper.saveNbt(nbt);
+        NbtUpdater.saveNbt(nbt);
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void nbtLoadCustom(NbtCompound nbt, CallbackInfo ci) {
-        Helper.loadNbt(nbt);
+        NbtUpdater.loadNbt(nbt);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onPlayerTick(CallbackInfo ci) {
         if (!this.isCreative() && this.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
             tickCounterA++;
-            if (tickCounterA % (int) TheRandom.fTheRandom(100F, (9F / 10F), (7F / 3F)) == 0) {
+            if (tickCounterA % (int) LimitRandomizer.fTheRandom(100F, (9F / 10F), (7F / 3F)) == 0) {
                 int foodValueStorage = this.getHungerManager().getFoodLevel();
                 if (foodValueStorage > 1) {
                     this.getHungerManager().setFoodLevel(foodValueStorage - 1);

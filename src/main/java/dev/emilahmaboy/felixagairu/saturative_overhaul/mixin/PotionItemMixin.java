@@ -29,8 +29,8 @@ public class PotionItemMixin {
             float exhaustion = 6.0F;
             int duration = 100;
             int amplifier = 1;
-            
-			PotionContentsComponent potionContentsComponent = (PotionContentsComponent) stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
+
+            PotionContentsComponent potionContentsComponent = (PotionContentsComponent) stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT);
             for (StatusEffectInstance effect : potionContentsComponent.getEffects()) {
                 duration = getDuration(effect, duration);
                 amplifier = getAmplifier(effect, amplifier);

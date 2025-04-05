@@ -1,8 +1,10 @@
 package dev.emilahmaboy.felixagairu.saturative_overhaul.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.SOConfig;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.SOConfigModel;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.common.registries.DamageTypeRegistry;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.LimitRandomizer;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.NbtUpdater;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.SharedData;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
@@ -10,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,27 +21,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.Helper;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.TheRandom;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.common.registries.DamageTypeRegistry;
-
-
 
 @Mixin(HungerManager.class)
 public abstract class HungerManagerMixin {
     @Unique
-    private final int maxFoodLevel = 400;
+    private static final int maxFoodLevel = SharedData.foodLevel;
     @Unique
-    private final float defaultSaturationLevel = 2.0f;
+    private static final float defaultSaturationLevel = 2.0f;
     @Unique
-    private final float defaultExhaustionLevel = 0.0f;
+    private static final float defaultExhaustionLevel = 0.0f;
     @Unique
-    private final int defaultFoodLevel = 160;
-
-    // Too low food: <20
-    // Low food: <100
-    // Normal: <300
-    // Too saturated: >=300
+    private static final int defaultFoodLevel = SharedData.defaultFoodLevel;
 
     @Shadow
     private int foodLevel = defaultFoodLevel;
@@ -47,7 +40,7 @@ public abstract class HungerManagerMixin {
     @Shadow
     private float exhaustion = defaultExhaustionLevel;
     @Shadow
-    private int foodTickTimer = Helper.foodTickTimer;
+    private int foodTickTimer = NbtUpdater.foodTickTimer;
     @Shadow
     private int prevFoodLevel;
 
@@ -58,26 +51,38 @@ public abstract class HungerManagerMixin {
      * @reason Saturative mod overwrites HungerManager
      */
 
+    @Unique
+    private void gainEffect(PlayerEntity who, @NotNull String eff, int dur, int amp) {
+        switch (eff) {
+            case "SLOWNESS":
+                who.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, dur, amp, false, false));
+                break;
+            case "NAUSEA":
+                who.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, dur, amp, false, false));
+                break;
+        }
+    }
+
     @Redirect(method = "addInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(III)I"))
     private int foodLevelChange(int nutritionAdded, int min, int max) {
-        float nutrition = nutritionAdded - this.foodLevel;
-        float multiNutrition = nutrition * Helper.nutritionModifier;
-        float randomizedMultiNutrition = TheRandom.fTheRandom(multiNutrition, 0.888F, 1.222F);
+        float nutrition = nutritionAdded - foodLevel;
+        float multiNutrition = nutrition * SharedData.nutritionModifier;
+        float randomizedMultiNutrition = LimitRandomizer.fTheRandom(multiNutrition, SharedData.nutritionRandLow, SharedData.nutritionRandHigh);
         int iRandomizedMultiNutrition = Math.round(randomizedMultiNutrition);
-        this.foodLevel = MathHelper.clamp(iRandomizedMultiNutrition + this.foodLevel, 0, this.maxFoodLevel);
-        return this.foodLevel;
+        foodLevel = MathHelper.clamp(iRandomizedMultiNutrition + foodLevel, 0, maxFoodLevel);
+        return foodLevel;
     }
 
     @Redirect(method = "addInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F"))
     private float saturationLevelChange(float saturationAdded, float min, float max) {
-        float randomizedSaturationAdded = TheRandom.fTheRandom(saturationAdded, 0.8F, 1.2F);
-        this.saturationLevel = MathHelper.clamp(randomizedSaturationAdded, 0.0F, (float) this.foodLevel / 18.0F);
-        return this.saturationLevel;
+        float randomizedSaturationAdded = LimitRandomizer.fTheRandom(saturationAdded, SharedData.saturationRandLow, SharedData.saturationRandHigh);
+        saturationLevel = MathHelper.clamp(randomizedSaturationAdded, 0.0F, (float) foodLevel / 18.0F);
+        return saturationLevel;
     }
 
     @ModifyReturnValue(method = "isNotFull", at = @At("TAIL"))
     public boolean isNotFull(boolean original) {
-        return this.foodLevel < maxFoodLevel;
+        return foodLevel < maxFoodLevel;
     }
 
     /**
@@ -87,7 +92,7 @@ public abstract class HungerManagerMixin {
 /*
     @Inject(method = "update", at = @At("TAIL"))
     public void modAfterUpdate(PlayerEntity player, CallbackInfo ci) {
-        this.updateValues();
+        updateValues();
     }
 */
     @Inject(method = "update", at = @At("HEAD"))
@@ -95,104 +100,99 @@ public abstract class HungerManagerMixin {
         Difficulty difficulty = player.getWorld().getDifficulty();
 
         boolean naturalRegenerative = player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        this.prevFoodLevel = (int) this.foodLevel;
+        prevFoodLevel = foodLevel;
 
         if (!player.isCreative()) {
             if (player.getHealth() < player.getMaxHealth()) {
-                this.exhaustion += Math.max(0.0F, 0.002F + (this.foodLevel > 300 ? 0.002F : 0.0F));
+                exhaustion += Math.max(0.0F, 0.002F + (foodLevel > 300 ? 0.002F : 0.0F));
             }
 
-            if (this.exhaustion > 1.5F) {
-                this.exhaustion -= 1.5F;
-                if (this.saturationLevel > 0.0F) {
-                    this.saturationLevel = (Math.max(this.saturationLevel - 0.4F, 0.0F));
-                    if (this.saturationLevel > 0.0F && this.foodLevel > 200) {
-                        this.saturationLevel = (Math.max(this.saturationLevel - 0.4F, 0.0F));
+            if (exhaustion > 1.5F) {
+                exhaustion -= 1.5F;
+                if (saturationLevel > 0.0F) {
+                    saturationLevel = (Math.max(saturationLevel - 0.4F, 0.0F));
+                    if (saturationLevel > 0.0F && foodLevel > 200) {
+                        saturationLevel = (Math.max(saturationLevel - 0.4F, 0.0F));
                     }
                 }
-                if (this.saturationLevel <= 0.0F) {
-                    this.foodLevel = (Math.max(this.foodLevel - 2, 0));
-                } else if (this.saturationLevel < 3.0F) {
-                    this.foodLevel = (Math.max(this.foodLevel - 1, 0));
+                if (saturationLevel <= 0.0F) {
+                    foodLevel = (Math.max(foodLevel - 2, 0));
+                } else if (saturationLevel < 3.0F) {
+                    foodLevel = (Math.max(foodLevel - 1, 0));
                 }
             }
 
-
-            if (this.foodLevel >= 350) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false));
-
-                this.foodTickTimer += 1;
-
-                if (this.foodTickTimer >= (80)) {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0, false, false));
-                    this.exhaustion = Math.max(0.0F, this.exhaustion + 3.9F);
+            if (foodLevel >= (SharedData.foodLevel - SharedData.thresholdHigh) / 2 ) {
+                gainEffect(player, "SLOWNESS",60,1);
+                foodTickTimer += 1;
+                if (foodTickTimer >= (80)) {
+                    gainEffect(player, "NAUSEA",200,0);
+                    exhaustion = Math.max(0.0F, exhaustion + 3.9F);
                     if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
                         if (difficulty != Difficulty.PEACEFUL) {
                             player.damage(DamageTypeRegistry.getSource(player.getWorld(), DamageTypeRegistry.OVEREATING_DAMAGE_TYPE), 1.0F);
                         }
                     }
-
-                    this.foodTickTimer = 0;
+                    foodTickTimer = 0;
                 }
-            } else if (this.foodLevel >= 310) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0, false, false));
-
-                this.foodTickTimer += 1;
-
-                if (this.foodTickTimer >= (100)) {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 160, 0, false, false));
-                    this.exhaustion = Math.max(0.0F, this.exhaustion + 2.5F);
-
-                    this.foodTickTimer = 0;
+            } else if (foodLevel >= SharedData.thresholdHigh) {
+                gainEffect(player, "SLOWNESS",60,0);
+                foodTickTimer += 1;
+                if (foodTickTimer >= (100)) {
+                    gainEffect(player, "NAUSEA",160,0);
+                    exhaustion = Math.max(0.0F, exhaustion + 2.5F);
+                    foodTickTimer = 0;
                 }
-            } else if (naturalRegenerative && this.saturationLevel > 0.0F && player.canFoodHeal() && this.foodLevel >= 120 && this.foodLevel < 310) {
-                this.foodTickTimer += 1;
-
-                if (this.foodTickTimer >= (10)) {
-                    float f = Math.min(this.saturationLevel, 5.0F);
+            } else if (naturalRegenerative && saturationLevel > 0.0F && player.canFoodHeal() &&
+                    foodLevel >= SharedData.thresholdMid &&
+                    foodLevel < SharedData.thresholdHigh) {
+                foodTickTimer += 1;
+                if (foodTickTimer >= (10)) {
+                    float f = Math.min(saturationLevel, 5.0F);
                     player.heal(f / 5.0F);
-                    this.exhaustion = Math.max(0.0F, this.exhaustion + (f / 2.0F));
+                    exhaustion = Math.max(0.0F, exhaustion + (f / 2.0F));
 
-                    this.foodTickTimer = 0;
+                    foodTickTimer = 0;
                 }
-            } else if (naturalRegenerative && this.saturationLevel <= 0.0F && player.canFoodHeal() && this.foodLevel >= 100 && player.getHealth() <= player.getMaxHealth() / 1.15) {
-                this.foodTickTimer += 1;
+            } else if (naturalRegenerative && saturationLevel <= 0.0F && player.canFoodHeal() &&
+                    foodLevel >= SharedData.thresholdLow &&
+                    player.getHealth() <= player.getMaxHealth() / 1.15) {
+                foodTickTimer += 1;
+                if (foodTickTimer >= (3)) {
+                    foodLevel -= 10;
+                    saturationLevel += 3.5F;
+                    exhaustion = Math.max(0.0F, exhaustion + 0.2F);
 
-                if (this.foodTickTimer >= (3)) {
-                    this.foodLevel -= 10;
-                    this.saturationLevel += 3.5F;
-                    this.exhaustion = Math.max(0.0F, this.exhaustion + 0.2F);
-
-                    this.foodTickTimer = 0;
+                    foodTickTimer = 0;
                 }
-            } else if (naturalRegenerative && player.canFoodHeal() && this.foodLevel >= 80 && this.foodLevel < 120) {
-                this.foodTickTimer += 1;
-
-                if (this.foodTickTimer >= (55)) {
+            } else if (naturalRegenerative && player.canFoodHeal() &&
+                    foodLevel >= (SharedData.thresholdLow - SharedData.thresholdMin) / 2 &&
+                    foodLevel < (SharedData.thresholdMid - SharedData.thresholdLow) / 2) {
+                foodTickTimer += 1;
+                if (foodTickTimer >= (55)) {
                     player.heal(1);
-                    this.exhaustion = Math.max(0.0F, this.exhaustion + 2.3F);
+                    exhaustion = Math.max(0.0F, exhaustion + 2.3F);
 
-                    this.foodTickTimer = 0;
+                    foodTickTimer = 0;
                 }
-            } else if (this.foodLevel <= 80 && this.foodLevel > 19) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0, false, false));
-            } else if (this.foodLevel <= 19) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false));
-
-                this.foodTickTimer += 1;
-
-                if (this.foodTickTimer >= (40 + this.foodLevel * 2)) {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 120, 0, false, false));
+            } else if (foodLevel >= SharedData.thresholdMin &&
+                    foodLevel <= (SharedData.thresholdLow - SharedData.thresholdMin) / 2) {
+                gainEffect(player, "SLOWNESS",60,0);
+            } else if (foodLevel < SharedData.thresholdMin) {
+                gainEffect(player, "SLOWNESS",60,1);
+                foodTickTimer += 1;
+                if (foodTickTimer >= (40 + foodLevel * 2)) {
+                    gainEffect(player, "NAUSEA",120,0);
                     if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
                         if (difficulty != Difficulty.PEACEFUL) {
                             player.damage(player.getDamageSources().starve(), 1.0F);
                         }
                     }
 
-                    this.foodTickTimer = 0;
+                    foodTickTimer = 0;
                 }
             }
         }
-        //this.updateValues();
+        //updateValues();
     }
 }

@@ -2,7 +2,7 @@ package dev.emilahmaboy.felixagairu.saturative_overhaul.mixin.appleskin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues;
+import dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues.foodBarDelta;
-import static dev.emilahmaboy.felixagairu.saturative_overhaul.api.HungerManagerValues.foodBarSize;
+import static dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues.foodBarDelta;
+import static dev.emilahmaboy.felixagairu.saturative_overhaul.tools.HungerManagerValues.foodBarSize;
 
 
 @Pseudo
