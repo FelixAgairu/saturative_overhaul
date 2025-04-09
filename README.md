@@ -1,8 +1,8 @@
 ## What is that
-A mod changes player hunger and saturation system.\
+A mod for Survival that changes player hunger and saturation system.\
+By default you got 400 Food level, so feed yourself with kinds of food.\
 It also has 3 layer of food bar, the **Starving**, **Normal** and **Overeating**.\
 Make life HARD, and enjoyable cause it gained your food mods importance.
-
 
 ## Use
 Could Run in client and both side.
