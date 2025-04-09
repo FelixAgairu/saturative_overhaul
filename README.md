@@ -134,6 +134,12 @@ For saturation random upper limit.
 > Lager, GUI show **Overeating** Layer\
 > SLOW! NAUSEA! Why You Eat So Much?
 
+#### "foodLevel"
+> 最大食物水平
+
+#### "defaultFoodLevel"
+> 默认食物水平，新玩家或重生后
+
 #### "nutritionModifier"
 > 用于帮助你增加食物水平\
 > 如果原版游戏里一个食物增加`2`的食物水平\
