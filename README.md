@@ -49,7 +49,7 @@ Make life hard and enjoyable, cause it gained your food mods importance.
 Locate your config in Minecraft installation location:\
 `%APPDATA%\.minecraft\config\saturative_overhaul.json` on Windows, default location.\
 You will get somethings like that:
-```
+```json
 {
 	"foodLevel":400,
 	"defaultFoodLevel":280,
@@ -69,7 +69,7 @@ You will get somethings like that:
 在我的世界安装位置里找到配置文件：\
 `%APPDATA%\.minecraft\config\saturative_overhaul.json` Windows默认位置\
 文件会包括以下内容:
-```
+```json
 {
 	"foodLevel":400,
 	"defaultFoodLevel":280,
