@@ -37,6 +37,9 @@ dependencies {
 
     // Apple Skin
     modImplementation "squeek.appleskin:appleskin-fabric:mc${project.appleskin_version}"
+
+    // The ConfigManager
+    modImplementation files('libs\\cfg-mgr-1.0.0.jar')
 }
 
 processResources {
