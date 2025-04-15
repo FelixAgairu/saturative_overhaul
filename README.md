@@ -66,10 +66,10 @@ You will get somethings like that:
 > To help you gain food level\
 > If you got a food add `2` as vanilla does\
 > This mod just make `2` to *nearly* `10` [See Code](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/mixin/HungerManagerMixin.java)\
-> To help you play with this mod.\
+> To help you play with this mod.
 
 > The following 4 settings also for that just above
-> Also make life random not static:[See Code](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/tools/LimitRandomizer.java)\
+> Also make life random not static:[See Code](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/tools/LimitRandomizer.java)
 
 - **"nutritionRandLow"**
 For nutrition random low limit.
