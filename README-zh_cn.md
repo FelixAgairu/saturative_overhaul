@@ -7,6 +7,15 @@
 
 ![Default](https://cdn.modrinth.com/data/x5alUhw5/images/4a21e6e0e1b0526412997cf3f4f1489870e2b2bc.jpeg)
 
+## 使用
+- 用户\
+加载所需模组[Config Manager](https://modrinth.com/mod/config-manager).
+- 开发者\
+在**build.gradle**里:\
+`modImplementation files('cfg-mgr-1.0.0.jar')`\
+或\
+`modImplementation "dev.felixagairu.configmanager:1.0.0"`
+
 ## 主要区别
 **优点**
 - 从右向左食物栏布局；
