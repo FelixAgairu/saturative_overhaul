@@ -7,6 +7,15 @@ Make life hard and enjoyable, cause it gained your food mods importance.
 
 ![Default](https://cdn.modrinth.com/data/x5alUhw5/images/4a21e6e0e1b0526412997cf3f4f1489870e2b2bc.jpeg)
 
+## Use
+- Users\
+Also load the require mod [Config Manager](https://modrinth.com/mod/config-manager).
+- Developer\
+In **build.gradle**:\
+`modImplementation files('cfg-mgr-1.0.0.jar')`\
+Or\
+`modImplementation "dev.felixagairu.configmanager:1.0.0"`
+
 ## Key Differences
 **Pros**
 - Right to Left food bar.
