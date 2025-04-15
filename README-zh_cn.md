@@ -67,10 +67,10 @@
 > 用于帮助你增加食物水平\
 > 如果原版游戏里一个食物增加`2`的食物水平\
 > 本模组会将`2`变成*接近*`10` [查看代码](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/mixin/HungerManagerMixin.java)\
-> 从而帮助你使用本模组进行游戏\
+> 从而帮助你使用本模组进行游戏
 
 > 以下四个设置也用于于上述内容
-> 同样用于让生活更多样:[查看代码](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/tools/LimitRandomizer.java)\
+> 同样用于让生活更多样:[查看代码](https://github.com/FelixAgairu/saturative_overhaul/blob/master/src/main/java/dev/emilahmaboy/felixagairu/saturative_overhaul/tools/LimitRandomizer.java)
 
 - **"nutritionRandLow"**
 随机营养值下限
