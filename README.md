@@ -11,10 +11,7 @@ Make life hard and enjoyable, cause it gained your food mods importance.
 - Users\
 Also load the require mod [Config Manager](https://modrinth.com/mod/config-manager).
 - Developer\
-In **build.gradle**:\
-`modImplementation files('cfg-mgr-1.0.0.jar')`\
-Or\
-`modImplementation "dev.felixagairu.configmanager:1.0.0"`
+See [Github](https://github.com/FelixAgairu/saturative_overhaul)
 
 ## Key Differences
 **Pros**
