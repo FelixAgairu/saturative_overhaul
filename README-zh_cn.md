@@ -11,10 +11,7 @@
 - 用户\
 加载所需模组[Config Manager](https://modrinth.com/mod/config-manager).
 - 开发者\
-在**build.gradle**里:\
-`modImplementation files('cfg-mgr-1.0.0.jar')`\
-或\
-`modImplementation "dev.felixagairu.configmanager:1.0.0"`
+查看[Github](https://github.com/FelixAgairu/saturative_overhaul)
 
 ## 主要区别
 **优点**
