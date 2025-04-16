@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 import dev.felixagairu.configmanager.ConfigManager;
 
 public class SharedData {
-
-
     private static final String defaultConfigs ="""
         {
         \t"foodLevel":400,

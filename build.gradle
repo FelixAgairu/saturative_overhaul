@@ -26,6 +26,20 @@ repositories {
     }
 }
 
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -39,7 +53,7 @@ dependencies {
     modImplementation "squeek.appleskin:appleskin-fabric:mc${project.appleskin_version}"
 
     // The ConfigManager
-    modImplementation files('libs\\cfg-mgr-1.0.0.jar')
+    modImplementation "maven.modrinth:config-manager:${project.configmanager_version}"
 }
 
 processResources {
