@@ -9,7 +9,6 @@
     "FelixAgairu"
   ],
   "contact": {
-    "homepage": "",
     "sources": "https://github.com/FelixAgairu/saturative_overhaul"
   },
   "license": "MIT",
@@ -29,7 +28,7 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric": "*",
+    "fabric-api": "*",
     "java": ">=21",
     "minecraft": "${minecraft_version}"
   }
