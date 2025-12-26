@@ -100,4 +100,4 @@ For saturation random upper limit.
 - ...
 
 ## Original
-[Saturative](https://github.com/EmilAhmaBoy/saturative) by EmilAhmaBoy
+Under MIT [Saturative](https://github.com/EmilAhmaBoy/saturative) by EmilAhmaBoy

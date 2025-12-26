@@ -101,4 +101,4 @@
 - ...
 
 ## 源于
-[Saturative](https://github.com/EmilAhmaBoy/saturative) by EmilAhmaBoy
+[Saturative](https://github.com/EmilAhmaBoy/saturative) 作者：EmilAhmaBoy 协议：MIT
