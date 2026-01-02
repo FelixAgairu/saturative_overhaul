@@ -1,7 +1,7 @@
 **[English](/README.md)** [简体中文](README-zh_cn.md)
 ## What is that
 A mod for Survival that changes player hunger and saturation system.\
-By default you got ~~20~~ **400** Food level, so feed yourself with kinds of food.\
+By default you got ~~20~~ ~~400~~ the customized Food level, so feed yourself with kinds of food.\
 It also has 3 layer of food bar, the **Starving**, **Normal** and **Overeating**.\
 Make life hard and enjoyable, cause it gained your food mods importance.
 
@@ -9,15 +9,15 @@ Make life hard and enjoyable, cause it gained your food mods importance.
 
 ## Use
 - Users\
-Also load the require mod [Config Manager](https://modrinth.com/mod/config-manager).
+Load the require mod [Config Manager](https://modrinth.com/mod/config-manager).
 - Developer\
 See [Github](https://github.com/FelixAgairu/saturative_overhaul)
 
 ## Key Differences
 **Pros**
 - Right to Left food bar.
-- Food's nutrition changes to 5x *default* with small randomizer.
-- Automatic food bar scale with customize Food level.
+- Configured Food's nutrition values and it's randomizer.
+- Configured food bar scale with customize Food level.
 - Lost saturation level on movement and even you standstill.
 - Can be configured with [Customize Settings](https://github.com/FelixAgairu/saturative_overhaul/edit/master/README.md#config).
 - No extra mod library needed.
