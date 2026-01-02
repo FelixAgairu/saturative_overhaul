@@ -1,3 +1,5 @@
 {
-  "death.attack.overeating": "%1$s died due to overeating"
+  "death.attack.overeating": "%1$s died due to overeating",
+  "death.attack.starving": "%1$s died due to starving",
+  "util.EffectHelper.FallbackToDefault": "Your effect config has error! The effect [%s] was not found, use default one [%s]."
 }

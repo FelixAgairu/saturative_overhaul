@@ -8,11 +8,14 @@
 // This file includes modifications by Felix.
 // Licensed under the MPL 2.0. Original portions © saturative upstream under MIT by EmilAhmaBoy.
 
-package dev.felixagairu.saturative_overhaul.mixin;
+package dev.felixagairu.saturative_overhaul.client.mixin;
 
-import dev.felixagairu.saturative_overhaul.tools.ConfigData;
+import dev.felixagairu.saturative_overhaul.util.ConfigData;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+/*? >=1.21.2 {*/
+import net.minecraft.client.render.RenderLayer;
+/*?}*/
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,6 +73,17 @@ public abstract class InGameHudMixin {
     private int noFoodBarRender(int ignored) {
         return 0;
     }
+
+    /*? >=1.21.2 {*/
+    @Unique
+    private static int premultiply(float r, float g, float b, float a) {
+        int ia = (int)(a * 255);
+        int ir = (int)(r * a * 255);
+        int ig = (int)(g * a * 255);
+        int ib = (int)(b * a * 255);
+
+        return (ia << 24) | (ir << 16) | (ig << 8) | ib;
+    }/*?}*/
 
     @Unique
     private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {
@@ -171,17 +185,72 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    private void drawFoodIcon(DrawContext context, Identifier icon, int x, int y, int u, int v, int width, int height, float r, float g, float b, float a, boolean isUV) {
-        context.setShaderColor(r, g, b, a);
+    private void drawFoodIcon(
+            DrawContext context,
+            Identifier icon,
+            int x, int y,
+            int u, int v,
+            int width, int height,
+            float r, float g, float b, float a,
+            boolean isUV
+    ) {
+        /*? <=1.21.1 {*/
+            /*context.setShaderColor(r, g, b, a);
 
-        if (isUV) {
-            context.drawTexture(icon, x, y, u, v, width, height);
-        } else {
-            context.enableScissor(x, y, x + width, y + height);
-            context.drawGuiTexture(icon, x, y, Math.max(width, height), Math.max(width, height));
+            if (isUV) {
+                context.drawTexture(icon, x, y, u, v, width, height);
+            } else {
+                context.enableScissor(x, y, x + width, y + height);
+                context.drawGuiTexture(icon, x, y, Math.max(width, height), Math.max(width, height));
+                context.disableScissor();
+            }
+
+            context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        *//*?} else {*/
+            // Alpha‑aware, premultiplied ARGB
+            int color = premultiply(r, g, b, a);
+
+            if (isUV) {
+                context.drawGuiTexture(
+                        /*? <=1.21.5 {*/
+                        /*RenderLayer::getGuiTextured,
+                        icon,
+                        Math.max(width, height),
+                        Math.max(width, height),
+                        u, v,
+                        x, y,
+                        Math.max(width, height),
+                        Math.max(width, height)
+                        *//*?} else {*/
+                        RenderLayer.getTextBackgroundSeeThrough().getRenderPipeline(),
+                        icon,
+                        Math.max(width, height),
+                        Math.max(width, height),
+                        u, v,
+                        x, y,
+                        Math.max(width, height),
+                        Math.max(width, height),
+                        color
+                        /*?}*/
+
+                );
+            } else {
+                context.enableScissor(x, y, x + width, y + height);
+
+                context.drawGuiTexture(
+                        /*? <=1.21.5 {*/
+                        /*RenderLayer::getGuiTextured,
+                         *//*?} else {*/
+                        RenderLayer.getTextBackgroundSeeThrough().getRenderPipeline(),
+                        /*?}*/
+                        icon,
+                        x, y,
+                        Math.max(width, height),
+                        Math.max(width, height),
+                        color
+                );
+            }
             context.disableScissor();
-        }
-
-        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        /*?}*/
     }
 }

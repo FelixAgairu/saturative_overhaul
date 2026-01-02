@@ -23,7 +23,8 @@
     ]
   },
   "mixins": [
-    "saturative_overhaul.mixins.json"
+    "saturative_overhaul.mixins.json",
+    "saturative_overhaul.client.mixins.json"
   ],
   "depends": {
     "minecraft": ">=${minecraftVersion}",

@@ -5,12 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "HungerManagerMixin",
-    "PlayerEntityMixin",
+    "ServerPlayerEntityMixin",
     "PotionItemMixin",
     "StatusEffectMixin"
-  ],
-  "client": [
-    "InGameHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

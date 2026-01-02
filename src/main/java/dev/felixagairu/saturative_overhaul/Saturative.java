@@ -25,7 +25,7 @@ import net.neoforged.fml.ModContainer;
 
 /*? if fabric {*/
 public class Saturative implements ModInitializer {
-    public static final String MODID = "saturative-overhaul";
+    public static final String MOD_ID = "saturative-overhaul";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     @Override
@@ -36,10 +36,10 @@ public class Saturative implements ModInitializer {
 
 /*? if neoforge {*/
 /*// The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(Saturative.MODID)
+@Mod(Saturative.MOD_ID)
 public class Saturative {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "saturative-overhaul";
+    public static final String MOD_ID = "saturative-overhaul";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
