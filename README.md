@@ -20,14 +20,13 @@ See [Github](https://github.com/FelixAgairu/saturative_overhaul)
 - Configured food bar scale with customize Food level.
 - Lost saturation level on movement and even you standstill.
 - Can be configured with [Customize Settings](https://github.com/FelixAgairu/saturative_overhaul/edit/master/README.md#config).
-- No extra mod library needed.
-- No other food mod changes required.
 - Almost no mod do with `HungerManager.class`, cause this mod should works with others, well.
+- Has 1.21.1+ support.
 
 **Cons**
 - Removed sleeptight support.
 - Removed farmer delight support.
-- Only Minecraft version 1.21.1.
+- Removed apple skin support.
 - Only Fabric.
 
 ## Config
