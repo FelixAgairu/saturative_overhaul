@@ -19,12 +19,12 @@ import dev.felixagairu.saturative_overhaul.util.LimitRandomizer;
 import net.minecraft.entity.player.HungerManager;
 
 /*? <=1.21.1 {*/
-/*import net.minecraft.entity.player.PlayerEntity;
-*//*?} else {*/
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.player.PlayerEntity;
+/*?} else {*/
+/*import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-/*?}*/
+*//*?}*/
 
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
@@ -82,9 +82,9 @@ public abstract class HungerManagerMixin {
     @Shadow
     private int foodTickTimer;
     /*? <=1.21.1 {*/
-    /*@Shadow
+    @Shadow
     private int prevFoodLevel;
-    *//*?}*/
+    /*?}*/
 
 
     /**
@@ -140,24 +140,24 @@ public abstract class HungerManagerMixin {
             method = "update",
             at = @At("HEAD")
     )
-    public void modHeadUpdate(/*? <=1.21.1 {*//*PlayerEntity*//*?} else {*/ServerPlayerEntity/*?}*/ player, CallbackInfo ci) {
+    public void modHeadUpdate(/*? <=1.21.1 {*/PlayerEntity/*?} else {*//*ServerPlayerEntity*//*?}*/ player, CallbackInfo ci) {
         /*? <=1.21.1 {*/
-        /*Difficulty difficulty = player.getWorld().getDifficulty();
+        Difficulty difficulty = player.getWorld().getDifficulty();
 
         boolean naturalRegenerative = player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
 
         prevFoodLevel = foodLevel;
-        *//*?} else <=1.21.5 {*/
+        /*?} else <=1.21.5 {*/
         /*ServerWorld serverWorld = player.getServerWorld();
         Difficulty difficulty = serverWorld.getDifficulty();
 
         boolean naturalRegenerative = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
         *//*?} else <=1.21.11 {*/
-        ServerWorld serverWorld = player.getEntityWorld();
+        /*ServerWorld serverWorld = player.getEntityWorld();
         Difficulty difficulty = serverWorld.getDifficulty();
 
         boolean naturalRegenerative = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        /*?} else {*//*
+        *//*?} else {*//*
         *//*?}*/
 
         boolean foodCurable = player.canFoodHeal();

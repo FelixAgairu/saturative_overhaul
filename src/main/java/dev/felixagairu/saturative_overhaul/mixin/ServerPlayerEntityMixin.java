@@ -5,8 +5,8 @@ import dev.felixagairu.saturative_overhaul.util.LimitRandomizer;
 import net.minecraft.entity.player.HungerManager;
 
 /*? <1.21.2 {*/
-/*import net.minecraft.entity.player.PlayerEntity;
-*//*?}*/
+import net.minecraft.entity.player.PlayerEntity;
+/*?}*/
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -37,9 +37,9 @@ public abstract class ServerPlayerEntityMixin {
     public abstract void playerTick();
 
     @Unique
-    private int tickCounterA = 1;
+    private int tickCounterA = 0;
     @Unique
-    private float theInterval = 20;
+    private int theInterval = 20;
 
     @Unique
     private boolean isPeaceful() {
@@ -50,48 +50,46 @@ public abstract class ServerPlayerEntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         /*? <=1.21.1 {*/
-        /*PlayerEntity player = (PlayerEntity)(Object)this;
+        PlayerEntity player = (PlayerEntity)(Object)this;
 
         boolean naturalRegenerative = player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        *//*?} else <=1.21.11 {*/
-        ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+        /*?} else <=1.21.11 {*/
+        /*ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         ServerWorld serverWorld = this.getServerWorld();
 
         boolean naturalRegenerative = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        /*?} else {*//*
+        *//*?} else {*//*
         *//*?}*/
         HungerManager hungerManager = player.getHungerManager();
 
         boolean check =
                 ConfigData.decreaseFoodLevelOverTimeEnabled
-             && !this.isCreative()
-             && !this.isPeaceful()
+             && !isCreative()
+             && !isPeaceful()
              && naturalRegenerative;
         if (check) {
             tickCounterA += 1;
+            int foodValueStorage = hungerManager.getFoodLevel();
 
-            if (ConfigData.randomDecreaseFoodLevelEnabled) {
-                if (tickCounterA % theInterval == 0) {
+            if (tickCounterA >= theInterval && foodValueStorage > 1) {
+                if (ConfigData.randomDecreaseFoodLevelEnabled) {
+                    hungerManager.setFoodLevel(Math.clamp(foodValueStorage - ConfigData.randomDecreaseFoodLevelPerTickAmounts, 0, ConfigData.maxFoodLevel));
+                    hungerManager.addExhaustion(ConfigData.randomAddExhaustionPerTickAmounts);
+
                     theInterval = (int) LimitRandomizer.generateRandom(
                             (float) ConfigData.randomDecreaseFoodLevelBaseTicks,
-                                    ConfigData.randomDecreaseFoodLevelMinMultiplier,
-                                    ConfigData.randomDecreaseFoodLevelMaxMultiplier);
+                            ConfigData.randomDecreaseFoodLevelMinMultiplier,
+                            ConfigData.randomDecreaseFoodLevelMaxMultiplier);
                     // Safeguard
                     theInterval = Math.clamp(theInterval, 1, 65535);
-                    int foodValueStorage = hungerManager.getFoodLevel();
-                    if (foodValueStorage > 1) {
-                        hungerManager.setFoodLevel(Math.clamp(foodValueStorage - ConfigData.randomDecreaseFoodLevelPerTickAmounts, 0, ConfigData.maxFoodLevel));
-                        hungerManager.addExhaustion(ConfigData.randomAddExhaustionPerTickAmounts);
-                    }
-                    this.tickCounterA = 1;
-                }
-            } else {
-                if (tickCounterA > theInterval) {
+                    tickCounterA = 0;
+                } else {
+                    hungerManager.setFoodLevel(Math.clamp(foodValueStorage - ConfigData.randomDecreaseFoodLevelPerTickAmounts, 0, ConfigData.maxFoodLevel));
+                    hungerManager.addExhaustion(ConfigData.randomAddExhaustionPerTickAmounts);
+
                     theInterval = ConfigData.randomDecreaseFoodLevelBaseTicks;
-                    this.tickCounterA = 1;
                 }
             }
-
         }
     }
 }
