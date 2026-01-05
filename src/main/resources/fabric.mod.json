@@ -30,6 +30,6 @@
     "minecraft": ">=${minecraftVersion}",
     "fabricloader": ">=${loader_version}",
     "fabric-api": ">=${fabricVersion}",
-    "config-manager": "*"
+    "config-manager": "=${modConfigManagerVersion}"
   }
 }
