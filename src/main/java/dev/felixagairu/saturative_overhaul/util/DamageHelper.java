@@ -52,12 +52,16 @@ public class DamageHelper {
         var entry = lookup.getOptional(key).orElse(null);
 
         if (entry == null) {
-            LOGGER.error(Text.translatable(
-                    "util.DamageHelper.FallbackToDefault",
-                    inId.toLowerCase(),
-                    inId.toLowerCase(),
-                    defaultId.toLowerCase()
-            ).getString());
+            if (!HAS_ERROR) {
+                LogHelper.error(Text.translatable(
+                        "util.DamageHelper.FallbackToDefault",
+                        inId.toLowerCase(),
+                        inId.toLowerCase(),
+                        defaultId.toLowerCase()
+                ).getString());
+
+                HAS_ERROR = true;
+            }
             entry = lookup.getOptional(defaultKey).orElse(lookup.getOptional(DamageTypes.STARVE).get());
         }
         return new DamageSource(entry);
@@ -74,7 +78,7 @@ public class DamageHelper {
         var entry = registry.getEntry(key).orElse(null);
         if (entry == null) {
             if (!HAS_ERROR) {
-                LOGGER.error(Text.translatable(
+                LogHelper.error(Text.translatable(
                         "util.DamageHelper.FallbackToDefault",
                         inId.toLowerCase(),
                         inId.toLowerCase(),

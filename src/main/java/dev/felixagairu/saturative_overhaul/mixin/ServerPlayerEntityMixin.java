@@ -131,13 +131,6 @@ public abstract class ServerPlayerEntityMixin {
                     hungerManager.addExhaustion(newExhaustion);
                 }
             }
-
-            LogHelper.info("==================================================");
-            LogHelper.info("tickIntervalFoodLevel: {}", tickIntervalFoodLevel);
-            LogHelper.info("tickIntervalExhaustion:  {}", tickIntervalExhaustion);
-            LogHelper.info("newFoodLevel: {}", newFoodLevel);
-            LogHelper.info("newExhaustion: {}", newExhaustion);
-            LogHelper.info("==================================================");
         }
     }
 }
