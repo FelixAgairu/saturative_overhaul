@@ -12,28 +12,16 @@
 package dev.felixagairu.saturative_overhaul.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.felixagairu.saturative_overhaul.registries.DamageTypeRegistry;
-import dev.felixagairu.saturative_overhaul.util.ConfigData;
-import dev.felixagairu.saturative_overhaul.util.DamageHelper;
-import dev.felixagairu.saturative_overhaul.util.LimitRandomizer;
+import dev.felixagairu.saturative_overhaul.util.*;
 import net.minecraft.entity.player.HungerManager;
 
-/*? <=1.21.1 {*/
+/*? >=1.21.2 {*/
+/*import net.minecraft.server.network.ServerPlayerEntity;
+*//*?} else >= 1.21.1 {*/
 import net.minecraft.entity.player.PlayerEntity;
-/*?} else {*/
-/*import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-*//*?}*/
+/*?}*/
 
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
-
-/*? <=1.21.10 {*/
-import net.minecraft.world.GameRules;
-/*?} else {*/
-/*import net.minecraft.world.rule.GameRules;
-*//*?}*/
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,8 +30,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static dev.felixagairu.saturative_overhaul.util.EffectHelper.gainEffect;
 
 /**
  * @author EmilAhmaBoy
@@ -58,20 +44,19 @@ import static dev.felixagairu.saturative_overhaul.util.EffectHelper.gainEffect;
 @Mixin(HungerManager.class)
 public abstract class HungerManagerMixin {
     @Unique
-    private static final int maxFoodLevel = ConfigData.maxFoodLevel;
+    private final int maxFoodLevel = ConfigHelper.thresholdMax;
     @Unique
-    private static final float defaultSaturationLevel = 2.0f;
+    private final float defaultSaturationLevel = 2.0f;
     @Unique
     private static final float defaultExhaustionLevel = 0.0f;
     @Unique
-    private static final int defaultFoodLevel = ConfigData.defaultFoodLevel;
+    private static final int defaultFoodLevel = ConfigHelper.defaultFoodLevel;
     @Unique
-    private static final float midpointHighMax = (float) (ConfigData.thresholdHigh + ConfigData.maxFoodLevel) / 2;
+    private static final float midpointHighMax = (float) (ConfigHelper.thresholdHigh + ConfigHelper.thresholdMax) / 2;
     @Unique
-    private static final float midpointLowMid = (float) (ConfigData.thresholdLow + ConfigData.thresholdMid) / 2;
+    private static final float midpointLowMid = (float) (ConfigHelper.thresholdLow + ConfigHelper.thresholdMid) / 2;
     @Unique
-    private static final float midpointMinLow = (float) (ConfigData.thresholdMin + ConfigData.thresholdLow) / 2;
-
+    private static final float midpointMinLow = (float) (ConfigHelper.thresholdMin + ConfigHelper.thresholdLow) / 2;
 
     @Shadow
     private int foodLevel = defaultFoodLevel;
@@ -81,19 +66,19 @@ public abstract class HungerManagerMixin {
     private float exhaustion = defaultExhaustionLevel;
     @Shadow
     private int foodTickTimer;
-    /*? <=1.21.1 {*/
+    /*? 1.21.1 {*/
     @Shadow
     private int prevFoodLevel;
     /*?}*/
 
-
     /**
      * Inject to addInternal():
+     * <br>
      * MathHelper.clamp(nutrition + this.foodLevel, 0, 20);
      *
-     * @return Clamped foodLevel level
+     * @return Clamped food level multiply by modifier
      *
-     * @param nutritionAdded The nutrition form caller
+     * @param foodLevelAdded The nutrition form caller
      * @param min clamp min
      * @param max clamp max
      */
@@ -104,14 +89,27 @@ public abstract class HungerManagerMixin {
                     target = "Lnet/minecraft/util/math/MathHelper;clamp(III)I"
             )
     )
-    private int foodLevelChange(int nutritionAdded, int min, int max) {
-        float nutrition = nutritionAdded - foodLevel;
-        float multiNutrition = nutrition * ConfigData.nutritionModifier;
-        float randomizedMultiNutrition = LimitRandomizer.generateRandom(multiNutrition, ConfigData.nutritionRandLow, ConfigData.nutritionRandHigh);
-        int iRandomizedMultiNutrition = Math.round(randomizedMultiNutrition);
-        // The way change the max food level
-        foodLevel = MathHelper.clamp(iRandomizedMultiNutrition + foodLevel, 0, maxFoodLevel);
-        return foodLevel;
+    private int addNutritionModifier(int foodLevelAdded, int min, int max) {
+        if (ConfigHelper.nutritionModifierEnabled) {
+            int finalFoodLevel;
+            float nutrition = foodLevelAdded - foodLevel;
+
+            if (ConfigHelper.nutritionRandomModifierEnabled) {
+                float randomModifier = MathHelper.generateRandom(
+                        ConfigHelper.nutritionModifier,
+                        ConfigHelper.nutritionModifierMinMultiplier,
+                        ConfigHelper.nutritionModifierMaxMultiplier
+                );
+                finalFoodLevel = Math.round(foodLevel + nutrition * randomModifier);
+            } else {
+                finalFoodLevel = Math.round(foodLevel * ConfigHelper.nutritionModifier);
+            }
+
+            return MathHelper.clampFoodLevel(finalFoodLevel);
+        } else {
+            // Vanilla like
+            return net.minecraft.util.math.MathHelper.clamp(foodLevelAdded, 0, maxFoodLevel);
+        }
     }
 
     @Redirect(
@@ -122,9 +120,14 @@ public abstract class HungerManagerMixin {
             )
     )
     private float saturationLevelChange(float saturationAdded, float min, float max) {
-        float randomizedSaturationAdded = LimitRandomizer.generateRandom(saturationAdded, ConfigData.saturationRandLow, ConfigData.saturationRandHigh);
-        saturationLevel = MathHelper.clamp(randomizedSaturationAdded, 0.0F, (float) foodLevel / 18.0F);
-        return saturationLevel;
+        if (ConfigHelper.saturationRandomizationEnabled) {
+            float saturation = saturationAdded - saturationLevel;
+            float randomizedSaturationAdded = MathHelper.generateRandom(saturation, ConfigHelper.saturationMinMultiplier, ConfigHelper.saturationMaxMultiplier);
+            return net.minecraft.util.math.MathHelper.clamp(randomizedSaturationAdded, 0.0f, ConfigHelper.thresholdMax);
+        } else {
+            // Vanilla
+            return net.minecraft.util.math.MathHelper.clamp(saturationAdded, 0.0f, max);
+        }
     }
 
     @ModifyReturnValue(
@@ -135,30 +138,16 @@ public abstract class HungerManagerMixin {
         return foodLevel < maxFoodLevel;
     }
 
-
     @Inject(
             method = "update",
             at = @At("HEAD")
     )
-    public void modHeadUpdate(/*? <=1.21.1 {*/PlayerEntity/*?} else {*//*ServerPlayerEntity*//*?}*/ player, CallbackInfo ci) {
-        /*? <=1.21.1 {*/
-        Difficulty difficulty = player.getWorld().getDifficulty();
-
-        boolean naturalRegenerative = player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-
+    public void modHeadUpdate(/*? >=1.21.2 {*//*ServerPlayerEntity*//*?} else >=1.21.1 {*/PlayerEntity/*?}*/ player, CallbackInfo ci) {
+        Difficulty difficulty = WorldPlayerUtils.getDifficulty(player);
+        boolean naturalRegenerative = WorldPlayerUtils.isNaturalRegenerative(player);
+        /*? 1.21.1 {*/
         prevFoodLevel = foodLevel;
-        /*?} else <=1.21.5 {*/
-        /*ServerWorld serverWorld = player.getServerWorld();
-        Difficulty difficulty = serverWorld.getDifficulty();
-
-        boolean naturalRegenerative = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        *//*?} else <=1.21.11 {*/
-        /*ServerWorld serverWorld = player.getEntityWorld();
-        Difficulty difficulty = serverWorld.getDifficulty();
-
-        boolean naturalRegenerative = serverWorld.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
-        *//*?} else {*//*
-        *//*?}*/
+        /*?}*/
 
         boolean foodCurable = player.canFoodHeal();
 
@@ -181,39 +170,70 @@ public abstract class HungerManagerMixin {
                     foodLevel = (Math.max(foodLevel - 1, 0));
                 }
             }
-
             if (foodLevel >= midpointHighMax) {
                 // Food Bar Overeating+
                 // "Overeat II"
-                gainEffect(player, ConfigData.thresholdHigh_Max_ShortEffectId, 60, ConfigData.thresholdHigh_Max_ShortAmplification, "SLOWNESS");
+                EffectHelper.gainEffect(
+                        player,
+                        ConfigHelper.thresholdHigh_Max_ShortEffectId,
+                        60,
+                        ConfigHelper.thresholdHigh_Max_ShortAmplification,
+                        "minecraft:slowness"
+                );
                 foodTickTimer += 1;
                 if (foodTickTimer >= (80)) {
-                    gainEffect(player,ConfigData.thresholdHigh_Max_LongEffectId , 200, ConfigData.thresholdHigh_Max_LongEffectAmplification, "NAUSEA");
+                    EffectHelper.gainEffect(
+                            player,
+                            ConfigHelper.thresholdHigh_Max_LongEffectId,
+                            200, ConfigHelper.thresholdHigh_Max_LongEffectAmplification,
+                            "minecraft:nausea"
+                    );
                     exhaustion = Math.max(0.0F, exhaustion + 3.9F);
                     if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
                         if (difficulty != Difficulty.PEACEFUL) {
-                            if (ConfigData.addRealDamageEnabled) {
-                                DamageHelper.doEffectDamage(player, ConfigData.damagePreTickEffectsOvereating, DamageTypeRegistry.OVEREATING_DAMAGE_TYPE);
-                                DamageHelper.doRealDamage(player, ConfigData.damagePreTickOvereating);
-                            } else {
-                                DamageHelper.doEffectDamage(player, ConfigData.damageEffectsOvereating, DamageTypeRegistry.OVEREATING_DAMAGE_TYPE);
+                            if (ConfigHelper.addPerTickDamageEnabled) {
+                                DamageHelper.doEffectDamage(
+                                        WorldPlayerUtils.getWorld(player),
+                                        player,
+                                        ConfigHelper.damageOvereatingDamageTypeId,
+                                        ConfigHelper.damageOvereatingDamageAmounts,
+                                        "minecraft:starve"
+                                );
+                            }
+                            if (ConfigHelper.addPerTickRealDamageEnabled) {
+                                DamageHelper.doRealDamage(
+                                        player,
+                                        ConfigHelper.realDamageOvereatingAmounts
+                                );
                             }
                         }
                     }
                     foodTickTimer = 0;
                 }
-            } else if (foodLevel >= ConfigData.thresholdHigh) {
+            } else if (foodLevel >= ConfigHelper.thresholdHigh) {
                 // Food Bar Overeating
                 // "Overeat I"
-                gainEffect(player,ConfigData.thresholdHigh_ShortEffectId , 60, ConfigData.thresholdHigh_ShortEffectAmplification, "SLOWNESS");
+                EffectHelper.gainEffect(
+                        player,
+                        ConfigHelper.thresholdHigh_ShortEffectId,
+                        60,
+                        ConfigHelper.thresholdHigh_ShortEffectAmplification,
+                        "minecraft:slowness"
+                );
                 foodTickTimer += 1;
                 if (foodTickTimer >= (100)) {
-                    gainEffect(player,ConfigData.thresholdHigh_LongEffectId , 160, ConfigData.thresholdHigh_LongEffectAmplification, "NAUSEA");
+                    EffectHelper.gainEffect(
+                            player,
+                            ConfigHelper.thresholdHigh_LongEffectId,
+                            160,
+                            ConfigHelper.thresholdHigh_LongEffectAmplification,
+                            "minecraft:nausea"
+                    );
                     exhaustion = Math.max(0.0F, exhaustion + 2.5F);
                     foodTickTimer = 0;
                 }
             } else if (naturalRegenerative && foodCurable && saturationLevel > 0.0F &&
-                    foodLevel >= ConfigData.thresholdMid) {
+                    foodLevel >= ConfigHelper.thresholdMid) {
                 foodTickTimer += 1;
                 if (foodTickTimer >= (10)) {
                     float f = Math.min(saturationLevel, 5.0F);
@@ -223,7 +243,7 @@ public abstract class HungerManagerMixin {
                     foodTickTimer = 0;
                 }
             } else if (naturalRegenerative && foodCurable && saturationLevel <= 0.0F &&
-                    foodLevel >= ConfigData.thresholdLow &&
+                    foodLevel >= ConfigHelper.thresholdLow &&
                     player.getHealth() <= player.getMaxHealth() / 1.15) {
                 foodTickTimer += 1;
                 if (foodTickTimer >= (3)) {
@@ -243,23 +263,48 @@ public abstract class HungerManagerMixin {
 
                     foodTickTimer = 0;
                 }
-            } else if (foodLevel >= ConfigData.thresholdMin && foodLevel <= midpointMinLow) {
+            } else if (foodLevel >= ConfigHelper.thresholdMin && foodLevel <= midpointMinLow) {
                 // "Hunger I"
-                gainEffect(player, ConfigData.thresholdMin_Low_EffectId, 60, ConfigData.thresholdMin_Low_EffectAmplification, "SLOWNESS");
-            } else if (foodLevel < ConfigData.thresholdMin) {
+                EffectHelper.gainEffect(
+                        player,
+                        ConfigHelper.thresholdMin_Low_EffectId,
+                        60, ConfigHelper.thresholdMin_Low_EffectAmplification,
+                        "minecraft:slowness"
+                );
+            } else if (foodLevel < ConfigHelper.thresholdMin) {
                 // Food Bar Starving
                 // "Hunger II"
-                gainEffect(player, ConfigData.threshold_Min_ShortEffectId, 60, ConfigData.threshold_Min_ShortEffectAmplification, "SLOWNESS");
+                EffectHelper.gainEffect(
+                        player,
+                        ConfigHelper.threshold_Min_ShortEffectId,
+                        60, ConfigHelper.threshold_Min_ShortEffectAmplification,
+                        "minecraft:slowness"
+                );
                 foodTickTimer += 1;
                 if (foodTickTimer >= (10 + foodLevel * 2)) {
-                    gainEffect(player, ConfigData.threshold_Min_LongEffectId, 120, ConfigData.threshold_Min_LongEffectAmplification, "NAUSEA");
+                    EffectHelper.gainEffect(
+                            player,
+                            ConfigHelper.threshold_Min_LongEffectId,
+                            120,
+                            ConfigHelper.threshold_Min_LongEffectAmplification,
+                            "minecraft:nausea"
+                    );
                     if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
                         if (difficulty != Difficulty.PEACEFUL) {
-                            if (ConfigData.addRealDamageEnabled) {
-                                DamageHelper.doEffectDamage(player, ConfigData.damagePreTickEffectsStarving, DamageTypeRegistry.STARVING_DAMAGE_TYPE);
-                                DamageHelper.doRealDamage(player, ConfigData.damagePreTickStarving);
-                            } else {
-                                DamageHelper.doEffectDamage(player, ConfigData.damageEffectsStarving, DamageTypeRegistry.STARVING_DAMAGE_TYPE);
+                            if (ConfigHelper.addPerTickDamageEnabled) {
+                                DamageHelper.doEffectDamage(
+                                        WorldPlayerUtils.getWorld(player),
+                                        player,
+                                        ConfigHelper.damageStarvingDamageTypeId,
+                                        ConfigHelper.damageStarvingDamageAmounts,
+                                        "minecraft:starve"
+                                );
+                            }
+                            if (ConfigHelper.addPerTickRealDamageEnabled) {
+                                DamageHelper.doRealDamage(
+                                        player,
+                                        ConfigHelper.realDamageStarvingAmounts
+                                );
                             }
                         }
                     }
@@ -268,8 +313,8 @@ public abstract class HungerManagerMixin {
                 }
             }
         } else {
-            if (foodLevel > ConfigData.defaultFoodLevel) {
-                foodLevel = ConfigData.defaultFoodLevel;
+            if (foodLevel > ConfigHelper.defaultFoodLevel) {
+                foodLevel = ConfigHelper.defaultFoodLevel;
             } else {
                 foodLevel = defaultFoodLevel;
             }
@@ -277,14 +322,30 @@ public abstract class HungerManagerMixin {
         //updateValues();
     }
 
-    // Add global modifier "exhaustionModifier" to exhaustion for match the config's "nutritionModifier"
-    @Inject(
+    /**
+     * Inject to addExhaustion():
+     * <br>
+     * Math.min(this.exhaustion + exhaustion, 40.0F);
+     *
+     * @return Clamped exhaustion multiply by modifier
+     *
+     * @param exhaustionAdded The exhaustion form caller
+     * @param max clamp max
+     */
+    @Redirect(
             method = "addExhaustion",
-            at = @At("HEAD"),
-            cancellable = true
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/lang/Math;min(FF)F"
+            )
     )
-    public void modHeadAddExhaustion(float exhaustion, CallbackInfo ci) {
-        this.exhaustion = Math.min(this.exhaustion + exhaustion * ConfigData.exhaustionModifier, ConfigData.exhaustionCap);
-        ci.cancel();
+    private float setExhaustionModifier(float exhaustionAdded, float max) {
+        if (ConfigHelper.exhaustionModifierEnabled) {
+            float exhaustion = exhaustionAdded - this.exhaustion;
+            return Math.min(this.exhaustion + exhaustion * ConfigHelper.exhaustionModifier, ConfigHelper.exhaustionCap);
+        } else {
+            // Vanilla
+            return Math.min(exhaustionAdded, 40.0f);
+        }
     }
 }

@@ -24,19 +24,28 @@ stonecutter {
             for (it in loaders) version("$version-$it", version)
         }
 
+        /*
+        * 1.21.1
+        * 1.21.2  - 1.21.5
+        * 1.21.6  - 1.21.8
+        * 1.21.9  - 1.21.10
+        * 1.21.11 - 1.21.11
+        * 26.1?
+        */
+
 //        mc("1.16.5", "forge")
 //        mc("1.21.1", "fabric", "neoforge")
         mc("1.21.1", "fabric")
         mc("1.21.2", "fabric")
-        mc("1.21.3", "fabric")
-//        mc("1.21.4", "fabric")
-        mc("1.21.5", "fabric")
-//        mc("1.21.6", "fabric")
-//        mc("1.21.7", "fabric")
-//        mc("1.21.8", "fabric")
-//        mc("1.21.9", "fabric")
-        mc("1.21.10", "fabric")
-//        mc("1.21.11", "fabric")
+//            mc("1.21.3", "fabric")
+//            mc("1.21.4", "fabric")
+//            mc("1.21.5", "fabric")
+        mc("1.21.6", "fabric")
+//            mc("1.21.7", "fabric")
+//            mc("1.21.8", "fabric")
+        mc("1.21.9", "fabric")
+//            mc("1.21.10", "fabric")
+        mc("1.21.11", "fabric")
 
         vcsVersion = "1.21.1-fabric"
     }

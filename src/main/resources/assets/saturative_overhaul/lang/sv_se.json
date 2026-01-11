@@ -1,0 +1,4 @@
+{
+  "util.EffectHelper.FallbackToDefault": "Effekt-ID i konfigurationen (...EffectId=\"%s\") är felaktigt! Effekten [%s] hittades inte, standardvärdet [%s] används.",
+  "util.DamageHelper.FallbackToDefault": "Skadetyp-ID i konfigurationen (...DamageTypeId=\"%s\") är felaktigt! Skadetypen [%s] hittades inte, standardvärdet [%s] används."
+}

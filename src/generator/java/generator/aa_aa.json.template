@@ -1,0 +1,5 @@
+{
+  "util.EffectHelper.FallbackToDefault": "Your effect id in config (...EffectId=\"%s\") has error! The effect [%s] was not found, use default one [%s].",
+  "util.DamageHelper.FallbackToDefault": "Your damage type id in config (...DamageTypeId=\"%s\") has error! The damage type [%s] was not found, use default one [%s].",
+// ===== GENERATED LANGUAGES HERE =====
+}

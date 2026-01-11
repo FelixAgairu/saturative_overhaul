@@ -1,0 +1,46 @@
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ */
+
+package dev.felixagairu.saturative_overhaul.util;
+
+import com.google.gson.JsonObject;
+import dev.felixagairu.configmanager.ConfigManager;
+
+import static dev.felixagairu.configmanager.utils.Getter.*;
+import static dev.felixagairu.configmanager.utils.Parsers.*;
+import static dev.felixagairu.saturative_overhaul.Saturative.MOD_ID;
+import static dev.felixagairu.saturative_overhaul.util.ConfigDefault.defaultConfigs;
+
+public class ConfigHelper {
+    static {
+        ConfigManager.setDefault(MOD_ID, ConfigTranslator.transformJsonString(defaultConfigs));
+        ConfigManager.setConfigsFile(MOD_ID);
+    }
+    private static final JsonObject configs = ConfigManager.getConfigs(MOD_ID);
+
+// ===== GENERATED CONSTANTS HERE =====
+
+    private ConfigHelper() {}
+
+    public static Object clampValue(Object value) {
+        long min = 0;
+        long max = 65535;
+
+        if (value instanceof Integer i) {
+            return Math.clamp((long) i, (int) min, (int) max);
+        }
+        if (value instanceof Float f) {
+            float fMin = (float) min;
+            float fMax = (float) max;
+            return Math.clamp(f, fMin, fMax);
+        }
+
+        // unsupported type → return unchanged
+        return value;
+    }
+}

@@ -1,0 +1,4 @@
+{
+  "util.EffectHelper.FallbackToDefault": "Yapılandırmadaki efekt kimliği (...EffectId=\"%s\") hatalı! [%s] efekti bulunamadı, varsayılan [%s] kullanılıyor.",
+  "util.DamageHelper.FallbackToDefault": "Yapılandırmadaki hasar türü kimliği (...DamageTypeId=\"%s\") hatalı! [%s] hasar türü bulunamadı, varsayılan [%s] kullanılıyor."
+}

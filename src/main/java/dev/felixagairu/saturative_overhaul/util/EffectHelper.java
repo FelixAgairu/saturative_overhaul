@@ -1,3 +1,11 @@
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ */
+
 package dev.felixagairu.saturative_overhaul.util;
 
 import net.minecraft.entity.effect.StatusEffect;
@@ -11,6 +19,8 @@ import net.minecraft.util.Identifier;
 import static dev.felixagairu.saturative_overhaul.Saturative.LOGGER;
 
 public class EffectHelper {
+    private static boolean HAS_ERROR = false;
+
     public static void gainEffect(
             PlayerEntity player,
             String inId,
@@ -29,11 +39,16 @@ public class EffectHelper {
 
             player.addStatusEffect(new StatusEffectInstance(fallBackEffect, duration, amplification, false, false));
 
-            LOGGER.error(Text.translatable(
-                    "util.EffectHelper.FallbackToDefault",
-                    inId.toLowerCase(),
-                    defaultId.toLowerCase()
-            ).getString());
+            if (!HAS_ERROR) {
+                LOGGER.error(Text.translatable(
+                        "util.EffectHelper.FallbackToDefault",
+                        inId.toLowerCase(),
+                        inId.toLowerCase(),
+                        defaultId.toLowerCase()
+                ).getString());
+
+                HAS_ERROR = true;
+            }
         }
     }
 }

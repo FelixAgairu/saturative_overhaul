@@ -10,7 +10,10 @@
 
 package dev.felixagairu.saturative_overhaul.client.mixin;
 
-import dev.felixagairu.saturative_overhaul.util.ConfigData;
+/*? >=1.21.6 {*/
+/*import net.minecraft.client.gl.RenderPipelines;
+*//*?}*/
+import dev.felixagairu.saturative_overhaul.util.ConfigHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 /*? >=1.21.2 {*/
@@ -20,7 +23,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,13 +49,6 @@ public abstract class InGameHudMixin {
     @Shadow
     @Final
     private static Identifier FOOD_FULL_HUNGER_TEXTURE;
-    @Shadow
-    private int ticks;
-    @Shadow
-    @Final
-    private Random random;
-    @Shadow
-    private long heartJumpEndTick;
 
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
@@ -137,10 +132,10 @@ public abstract class InGameHudMixin {
             }
             this.drawFoodIcon(context, iconsEmpty, x, y, _uEmpty, _vEmpty, 9, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
 
-            if (foodLevel < ConfigData.thresholdMin) {
+            if (foodLevel < ConfigHelper.guiStarving) {
                 // Food Bar Starving
                 // "Hunger II"
-                foodSegment = (float) ConfigData.thresholdMin / fFoodBarSize;
+                foodSegment = (float) ConfigHelper.guiStarving / fFoodBarSize;
                 iconWidth = Math.round((1 - foodLevel % foodSegment / foodSegment) * 9.0F);
                 if (Math.ceil(foodLevel / foodSegment) > i) {
                     this.drawFoodIcon(context, iconsFull, x, y, _uFull, _vFull, 9, 9, 0.45F, 0.83F, 0.69F, 0.75F, isUV);
@@ -150,27 +145,27 @@ public abstract class InGameHudMixin {
                         this.drawFoodIcon(context, iconsEmpty, x, y, _uFull, _vFull, iconWidth, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
                     }
                 }
-            } else if (foodLevel < ConfigData.thresholdStd) {
+            } else if (foodLevel < ConfigHelper.guiNormal) {
                 // Normal
-                foodSegment = (float) (ConfigData.thresholdStd - ConfigData.thresholdMin) / fFoodBarSize;
+                foodSegment = (float) (ConfigHelper.guiNormal - ConfigHelper.guiStarving) / fFoodBarSize;
                 iconWidth = Math.round((1 - foodLevel % foodSegment / foodSegment) * 9.0F);
-                if (Math.ceil((foodLevel - (float) ConfigData.thresholdMin) / foodSegment) > i) {
+                if (Math.ceil((foodLevel - (float) ConfigHelper.guiStarving) / foodSegment) > i) {
                     this.drawFoodIcon(context, iconsFull, x, y, _uFull, _vFull, 9, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
                 }
-                if (Math.ceil((foodLevel - (float) ConfigData.thresholdMin) / foodSegment) == i + 1) {
+                if (Math.ceil((foodLevel - (float) ConfigHelper.guiStarving) / foodSegment) == i + 1) {
                     if (!((foodLevel % foodSegment) / foodSegment == 0)) {
                         this.drawFoodIcon(context, iconsEmpty, x, y, _uFull, _vFull, iconWidth, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
                     }
                 }
-            } else if (foodLevel < ConfigData.thresholdHigh) {
+            } else if (foodLevel < ConfigHelper.guiOvereating) {
                 // Food Bar Overeating
                 // "Overeat I"
-                foodSegment = (float) (ConfigData.thresholdHigh - ConfigData.thresholdStd - ConfigData.thresholdMin) / fFoodBarSize;
+                foodSegment = (float) (ConfigHelper.guiOvereating - ConfigHelper.guiNormal - ConfigHelper.guiStarving) / fFoodBarSize;
                 iconWidth = Math.round((1 - foodLevel % foodSegment / foodSegment) * 9.0F);
-                if (Math.ceil((foodLevel - (float) (ConfigData.thresholdHigh - ConfigData.thresholdStd - ConfigData.thresholdMin)) / foodSegment) > i) {
+                if (Math.ceil((foodLevel - (float) (ConfigHelper.guiOvereating - ConfigHelper.guiNormal - ConfigHelper.guiStarving)) / foodSegment) > i) {
                     this.drawFoodIcon(context, iconsFull, x, y, _uFull, _vFull, 9, 9, 1.0F, 0.7F, 0.3F, 1.0F, isUV);
                 }
-                if (Math.ceil((foodLevel - (float) (ConfigData.thresholdHigh - ConfigData.thresholdStd - ConfigData.thresholdMin)) / foodSegment) == i + 1) {
+                if (Math.ceil((foodLevel - (float) (ConfigHelper.guiOvereating - ConfigHelper.guiNormal - ConfigHelper.guiStarving)) / foodSegment) == i + 1) {
                     if (!((foodLevel % foodSegment) / foodSegment == 0)) {
                         this.drawFoodIcon(context, iconsEmpty, x, y, _uFull, _vFull, iconWidth, 9, 1.0F, 1.0F, 1.0F, 1.0F, isUV);
                     }
@@ -194,63 +189,67 @@ public abstract class InGameHudMixin {
             float r, float g, float b, float a,
             boolean isUV
     ) {
-        /*? <=1.21.1 {*/
-            context.setShaderColor(r, g, b, a);
+        /*? >=1.21.2 {*/
+        /*// Alpha‑aware, premultiplied ARGB
+        int color = premultiply(r, g, b, a);
 
-            if (isUV) {
-                context.drawTexture(icon, x, y, u, v, width, height);
-            } else {
-                context.enableScissor(x, y, x + width, y + height);
-                context.drawGuiTexture(icon, x, y, Math.max(width, height), Math.max(width, height));
-                context.disableScissor();
-            }
+        if (isUV) {
+            context.drawGuiTexture(
+                    /^? >=1.21.6 {^/
+                    /^RenderPipelines.GUI_TEXTURED,
+                    icon,
+                    Math.max(width, height),
+                    Math.max(width, height),
+                    u, v,
+                    x, y,
+                    Math.max(width, height),
+                    Math.max(width, height),
+                    color
+                    ^//^?} else >= 1.21.1 {^/
+                    RenderLayer::getGuiTextured,
+                    icon,
+                    Math.max(width, height),
+                    Math.max(width, height),
+                    u, v,
+                    x, y,
+                    Math.max(width, height),
+                    Math.max(width, height)
+                    /^?}^/
+            );
+        } else {
+            context.enableScissor(x, y, x + width, y + height);
 
-            context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        /*?} else {*/
-            /*// Alpha‑aware, premultiplied ARGB
-            int color = premultiply(r, g, b, a);
+            context.drawGuiTexture(
+                    /^? >=1.21.6 {^/
+                    /^RenderPipelines.GUI_TEXTURED,
+                    icon,
+                    x, y,
+                    Math.max(width, height),
+                    Math.max(width, height),
+                    color
+                    ^//^?} else >= 1.21.1 {^/
+                    RenderLayer::getGuiTextured,
+                    icon,
+                    x, y,
+                    Math.max(width, height),
+                    Math.max(width, height),
+                    color
+                    /^?}^/
+            );
+        }
+        context.disableScissor();
+        *//*?} else >=1.21.1 {*/
+        context.setShaderColor(r, g, b, a);
 
-            if (isUV) {
-                context.drawGuiTexture(
-                        /^? <=1.21.5 {^/
-                        RenderLayer::getGuiTextured,
-                        icon,
-                        Math.max(width, height),
-                        Math.max(width, height),
-                        u, v,
-                        x, y,
-                        Math.max(width, height),
-                        Math.max(width, height)
-                        /^?} else {^/
-                        /^RenderLayer.getTextBackgroundSeeThrough().getRenderPipeline(),
-                        icon,
-                        Math.max(width, height),
-                        Math.max(width, height),
-                        u, v,
-                        x, y,
-                        Math.max(width, height),
-                        Math.max(width, height),
-                        color
-                        ^//^?}^/
-
-                );
-            } else {
-                context.enableScissor(x, y, x + width, y + height);
-
-                context.drawGuiTexture(
-                        /^? <=1.21.5 {^/
-                        RenderLayer::getGuiTextured,
-                         /^?} else {^/
-                        /^RenderLayer.getTextBackgroundSeeThrough().getRenderPipeline(),
-                        ^//^?}^/
-                        icon,
-                        x, y,
-                        Math.max(width, height),
-                        Math.max(width, height),
-                        color
-                );
-            }
+        if (isUV) {
+            context.drawTexture(icon, x, y, u, v, width, height);
+        } else {
+            context.enableScissor(x, y, x + width, y + height);
+            context.drawGuiTexture(icon, x, y, Math.max(width, height), Math.max(width, height));
             context.disableScissor();
-        *//*?}*/
+        }
+
+        context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        /*?}*/
     }
 }

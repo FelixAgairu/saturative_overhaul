@@ -11,7 +11,7 @@
   "contact": {
     "sources": "https://github.com/FelixAgairu/saturative_overhaul"
   },
-  "license": "MPL 2.0",
+  "license": "${license}",
   "icon": "assets/saturative_overhaul/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -27,9 +27,9 @@
     "saturative_overhaul.client.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=${minecraftVersion}",
-    "fabricloader": ">=${loader_version}",
+    "minecraft": ${minecraftVersionRange},
+    "fabricloader": ">=${fabricLoaderVersion}",
     "fabric-api": ">=${fabricVersion}",
-    "config-manager": "=${modConfigManagerVersion}"
+    "config-manager": ">=${modConfigManagerVersion}"
   }
 }

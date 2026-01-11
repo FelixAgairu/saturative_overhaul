@@ -1,30 +1,117 @@
+/*
+ *
+ *  * This Source Code Form is subject to the terms of the Mozilla Public
+ *  * License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ */
+
 package dev.felixagairu.saturative_overhaul.util;
 
-import dev.felixagairu.saturative_overhaul.registries.DamageTypeRegistry;
-
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
-/*? <=1.21.1 {*/
-/*?} else {*/
-/*import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
+import static dev.felixagairu.saturative_overhaul.Saturative.LOGGER;
+/*? >=1.21.2 {*/
+/*
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-*//*?}*/
+*//*?} else >=1.21.1 {*/
+import net.minecraft.world.World;
+/*?}*/
+
 
 public class DamageHelper {
-    /*? <=1.21.1 {*/
-    public static void doEffectDamage(PlayerEntity player, float amount, RegistryKey<DamageType> DAMAGE_TYPE) {
-    /*?} else {*/
-    /*public static void doEffectDamage(ServerPlayerEntity player, float amount, RegistryKey<DamageType> DAMAGE_TYPE) {
-    *//*?}*/
+    private static boolean HAS_ERROR = false;
 
-        /*? <=1.21.1 {*/
-            player.damage(DamageTypeRegistry.getSource(player.getWorld(), DAMAGE_TYPE), amount);
-        /*?} else <=1.21.5 {*/
-            /*player.damage(player.getServerWorld(), DamageTypeRegistry.getSource(player, DAMAGE_TYPE), amount);
-        *//*?} else <=1.21.11 {*/
-            /*player.damage(player.getEntityWorld(), DamageTypeRegistry.getSource(player, DAMAGE_TYPE), amount);
-        *//*?}*/
+    public static DamageSource damageSourceFromString(
+            /*? >=1.21.2 {*//*ServerWorld world,*//*?} else >=1.21.1 {*/World world,/*?}*/
+            String inId,
+            String defaultId
+    ) {
+        Identifier id = Identifier.of(inId.toLowerCase());
+        RegistryKey<DamageType> key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id);
+
+        Identifier idDefault = Identifier.of(inId.toLowerCase());
+        RegistryKey<DamageType> defaultKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, idDefault);
+
+        /*? >=1.21.2 {*/
+        /*// RegistryEntryLookup<DamageType> lookup
+        var lookup = world.getRegistryManager()
+                .getOrThrow(RegistryKeys.DAMAGE_TYPE);
+
+        // RegistryEntry<DamageType> entry
+        var entry = lookup.getOptional(key).orElse(null);
+
+        if (entry == null) {
+            LOGGER.error(Text.translatable(
+                    "util.DamageHelper.FallbackToDefault",
+                    inId.toLowerCase(),
+                    inId.toLowerCase(),
+                    defaultId.toLowerCase()
+            ).getString());
+            entry = lookup.getOptional(defaultKey).orElse(lookup.getOptional(DamageTypes.STARVE).get());
+        }
+        return new DamageSource(entry);
+        *//*?} else >=1.21.1 {*/
+        // Registry<DamageType> registry
+        var registry = world.getRegistryManager()
+                .get(RegistryKeys.DAMAGE_TYPE);
+
+        if (registry == null) {
+            throw new IllegalStateException("DamageType registry missing");
+        }
+
+        // Optional<RegistryEntry<DamageType>> entry
+        var entry = registry.getEntry(key).orElse(null);
+        if (entry == null) {
+            if (!HAS_ERROR) {
+                LOGGER.error(Text.translatable(
+                        "util.DamageHelper.FallbackToDefault",
+                        inId.toLowerCase(),
+                        inId.toLowerCase(),
+                        defaultId.toLowerCase()
+                ).getString());
+
+                HAS_ERROR = true;
+            }
+            entry = registry.getEntry(defaultKey).orElse(registry.getEntry(DamageTypes.STARVE).get());
+        }
+
+        return new DamageSource(entry);
+        /*?} else {*/
+        /*?}*/
+    }
+
+    public static void doEffectDamage(
+            /*? >=1.21.2 {*//*ServerWorld world,*//*?} else >=1.21.1 {*/World world,/*?}*/
+            /*? >=1.21.2 {*//*ServerPlayerEntity player,*//*?} else >=1.21.1 {*/PlayerEntity player,/*?}*/
+            String inId,
+            float amount,
+            String defaultId
+    ) {
+        /*? >=1.21.2 {*/
+        /*player.damage(
+                WorldPlayerUtils.getWorld(player),
+                damageSourceFromString(world, inId, defaultId),
+                amount
+        );
+        *//*?} else >=1.21.1 {*/
+        player.damage(
+                damageSourceFromString(world, inId, defaultId),
+                amount
+        );
+        /*?} else {*/
+        /*?}*/
+
     }
     public static void doRealDamage(PlayerEntity player, float amount) {
         player.setHealth(player.getHealth() - amount);

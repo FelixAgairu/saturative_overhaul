@@ -15,7 +15,8 @@ import com.mojang.logging.LogUtils;
 
 /*? if fabric {*/
 import net.fabricmc.api.ModInitializer;
- /*?}*/
+import org.slf4j.LoggerFactory;
+/*?}*/
 
 /*? if neoforge {*/
 /*import net.neoforged.bus.api.IEventBus;
@@ -26,11 +27,12 @@ import net.neoforged.fml.ModContainer;
 /*? if fabric {*/
 public class Saturative implements ModInitializer {
     public static final String MOD_ID = "saturative-overhaul";
-    public static final Logger LOGGER = LogUtils.getLogger();
+    // Fabric →          Logger LOGGER = LoggerFactory.getLogger(MOD_ID)
+    // Forge NeoForge →  Logger LOGGER = LogManager.getLogger(MOD_ID)
+    public static final Logger LOGGER = /*? fabric {*/ LoggerFactory /*?} else if forge || neoforge {*/ /*LogManager *//*?}*/.getLogger(MOD_ID);
 
     @Override
-    public void onInitialize() {
-    }
+    public void onInitialize() {}
 }
 /*?}*/
 
