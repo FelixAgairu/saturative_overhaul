@@ -81,7 +81,7 @@ public class Generator {
             new Config(0, "desc", "decreaseFoodLevelOverTime", "Placeholder"),
             new Config(1, "boolean", "decreaseFoodLevelOverTimeEnabled", "true"),
             new Config(1, "int", "decreaseFoodLevelBaseTicks", "200"),
-            new Config(1, "float", "decreaseFoodLevelBaseAmounts", "1"),
+            new Config(1, "int", "decreaseFoodLevelBaseAmounts", "1"),
             new Config(1, "boolean", "randomDecreaseFoodLevelEnabled", "true"),
             new Config(1, "float", "randomDecreaseFoodLevelMinMultiplier", "0.75"),
             new Config(1, "float", "randomDecreaseFoodLevelMaxMultiplier", "1.25"),

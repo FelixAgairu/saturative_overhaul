@@ -67,13 +67,12 @@ public abstract class ServerPlayerEntityMixin {
                     // Random ticks or not
                     if (ConfigHelper.randomDecreaseFoodLevelEnabled) {
                         // Get next random ticks
-                        tickIntervalFoodLevel = (int) MathHelper.generateRandom(
-                            (float) ConfigHelper.decreaseFoodLevelBaseTicks,
-                            ConfigHelper.randomDecreaseFoodLevelMinMultiplier,
-                            ConfigHelper.randomDecreaseFoodLevelMaxMultiplier
+                        // int = (int, float, float)
+                        tickIntervalFoodLevel = MathHelper.generateRandomTicks(
+                                ConfigHelper.decreaseFoodLevelBaseTicks,
+                                ConfigHelper.randomDecreaseFoodLevelMinMultiplier,
+                                ConfigHelper.randomDecreaseFoodLevelMaxMultiplier
                         );
-
-                        tickCounterFoodLevel = 0;
                     } else {
                         // Next fixed ticks
                         tickIntervalFoodLevel = ConfigHelper.decreaseFoodLevelBaseTicks;
@@ -82,15 +81,17 @@ public abstract class ServerPlayerEntityMixin {
                     //int newFoodLevel
                     if (ConfigHelper.decreaseRandomFoodLevelEnabled) {
                         // Get random food level
-                        newFoodLevel = (int) MathHelper.clampFoodLevel(MathHelper.generateRandom(
+                        newFoodLevel = MathHelper.clampFoodLevel(MathHelper.generateRandom(
                                 ConfigHelper.decreaseFoodLevelBaseAmounts,
                                 ConfigHelper.decreaseFoodLevelMinMultiplier,
                                 ConfigHelper.decreaseFoodLevelMaxMultiplier
                         ));
                     } else {
                         // Get fixed food level
-                        newFoodLevel = (int) MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
+                        newFoodLevel = MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
                     }
+                    // Reset counter
+                    tickCounterFoodLevel = 0;
                     // Set food level
                     hungerManager.setFoodLevel(hungerManager.getFoodLevel() - newFoodLevel);
                 }
@@ -103,13 +104,12 @@ public abstract class ServerPlayerEntityMixin {
                     // Random ticks or not
                     if (ConfigHelper.randomAddExhaustionEnabled) {
                         // Get next random ticks
-                        tickIntervalExhaustion = (int) MathHelper.generateRandom(
-                                (float) ConfigHelper.addExhaustionBaseTicks,
+                        // int = (int, float, float)
+                        tickIntervalExhaustion = MathHelper.generateRandomTicks(
+                                ConfigHelper.addExhaustionBaseTicks,
                                 ConfigHelper.randomAddExhaustionMinMultiplier,
                                 ConfigHelper.randomAddExhaustionMaxMultiplier
                         );
-
-                        tickCounterExhaustion = 0;
                     } else {
                         // Next fixed ticks
                         tickIntervalExhaustion = ConfigHelper.addExhaustionBaseTicks;
@@ -127,6 +127,8 @@ public abstract class ServerPlayerEntityMixin {
                         // Get fixed exhaustion
                         newExhaustion = ConfigHelper.addExhaustionBaseAmounts;
                     }
+                    // Reset counter
+                    tickCounterExhaustion = 0;
                     // Set exhaustion
                     hungerManager.addExhaustion(newExhaustion);
                 }

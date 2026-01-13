@@ -62,7 +62,7 @@ public class ConfigHelper {
 	//decreaseFoodLevelOverTime
 	public static final boolean decreaseFoodLevelOverTimeEnabled = parseBooleanSafe(deepGet(configs, "decreaseFoodLevelOverTimeEnabled"));
 	public static final int decreaseFoodLevelBaseTicks = (int) clampValue(parseIntegerSafe(deepGet(configs, "decreaseFoodLevelBaseTicks")));
-	public static final float decreaseFoodLevelBaseAmounts = (float) clampValue(parseFloatSafe(deepGet(configs, "decreaseFoodLevelBaseAmounts")));
+	public static final int decreaseFoodLevelBaseAmounts = (int) clampValue(parseIntegerSafe(deepGet(configs, "decreaseFoodLevelBaseAmounts")));
 	public static final boolean randomDecreaseFoodLevelEnabled = parseBooleanSafe(deepGet(configs, "randomDecreaseFoodLevelEnabled"));
 	public static final float randomDecreaseFoodLevelMinMultiplier = (float) clampValue(parseFloatSafe(deepGet(configs, "randomDecreaseFoodLevelMinMultiplier")));
 	public static final float randomDecreaseFoodLevelMaxMultiplier = (float) clampValue(parseFloatSafe(deepGet(configs, "randomDecreaseFoodLevelMaxMultiplier")));
