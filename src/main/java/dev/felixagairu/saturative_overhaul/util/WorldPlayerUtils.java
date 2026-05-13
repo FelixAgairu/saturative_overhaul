@@ -81,7 +81,7 @@ public class WorldPlayerUtils {
     }
 }
 *//*?} else >=1.21.2 {*/
-import net.minecraft.server.network.ServerPlayerEntity;
+/*import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -103,8 +103,8 @@ public class WorldPlayerUtils {
         return getWorld(player).getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
     }
 }
-/*?} else >=1.21.1 {*/
-/*import net.minecraft.entity.player.PlayerEntity;
+*//*?} else >=1.21.1 {*/
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -126,5 +126,5 @@ public class WorldPlayerUtils {
         return player.getWorld().getGameRules().getBoolean(GameRules.NATURAL_REGENERATION);
     }
 }
-*//*?} else {*//*
+/*?} else {*//*
 *//*?}*/
