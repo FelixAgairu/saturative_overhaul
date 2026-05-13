@@ -1,14 +1,13 @@
 package dev.felixagairu.saturative_overhaul.mixin;
 
 import dev.felixagairu.saturative_overhaul.util.ConfigHelper;
-import dev.felixagairu.saturative_overhaul.util.LogHelper;
 import dev.felixagairu.saturative_overhaul.util.WorldPlayerUtils;
 import dev.felixagairu.saturative_overhaul.util.MathHelper;
 import net.minecraft.entity.player.HungerManager;
 
 /*? 1.21.1 {*/
-import net.minecraft.entity.player.PlayerEntity;
-/*?}*/
+/*import net.minecraft.entity.player.PlayerEntity;
+*//*?}*/
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -40,30 +39,31 @@ public abstract class ServerPlayerEntityMixin {
     @Unique
     private int tickIntervalExhaustion = 20;
     @Unique
-    private int newFoodLevel = 0;
+    private int reducedFoodLevel = 0;
     @Unique
     private float newExhaustion = 0.0f;
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         /*? <=1.21.1 {*/
-        PlayerEntity player = (PlayerEntity)(Object)this;
-        /*?} else <=1.21.11 {*/
-        /*ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
-        *//*?} else {*//*
+        /*PlayerEntity player = (PlayerEntity)(Object)this;
+        *//*?} else <=1.21.11 {*/
+        ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+        /*?} else {*//*
         *//*?}*/
-        HungerManager hungerManager = player.getHungerManager();
-
         boolean check =
                 !WorldPlayerUtils.isCreative(player)
              && !WorldPlayerUtils.isPeaceful(player)
              && WorldPlayerUtils.isNaturalRegenerative(player);
 
         if (check) {
+            HungerManager hungerManager = player.getHungerManager();
+
             if (ConfigHelper.decreaseFoodLevelOverTimeEnabled) {
+                int foodLevel = hungerManager.getFoodLevel();
                 tickCounterFoodLevel += 1;
 
-                if (tickCounterFoodLevel >= tickIntervalFoodLevel && hungerManager.getFoodLevel() > 1) {
+                if (tickCounterFoodLevel >= tickIntervalFoodLevel && foodLevel > 1) {
                     // Random ticks or not
                     if (ConfigHelper.randomDecreaseFoodLevelEnabled) {
                         // Get next random ticks
@@ -81,21 +81,22 @@ public abstract class ServerPlayerEntityMixin {
                     //int newFoodLevel
                     if (ConfigHelper.decreaseRandomFoodLevelEnabled) {
                         // Get random food level
-                        newFoodLevel = MathHelper.clampFoodLevel(MathHelper.generateRandom(
+                        reducedFoodLevel = MathHelper.clampFoodLevel(MathHelper.generateRandom(
                                 ConfigHelper.decreaseFoodLevelBaseAmounts,
                                 ConfigHelper.decreaseFoodLevelMinMultiplier,
                                 ConfigHelper.decreaseFoodLevelMaxMultiplier
                         ));
                     } else {
                         // Get fixed food level
-                        newFoodLevel = MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
+                        reducedFoodLevel = MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
                     }
                     // Reset counter
                     tickCounterFoodLevel = 0;
                     // Set food level
-                    hungerManager.setFoodLevel(hungerManager.getFoodLevel() - newFoodLevel);
+                    hungerManager.setFoodLevel(Math.max(foodLevel - reducedFoodLevel, 0));
                 }
             }
+
             // Add exhaustion or not
             if (ConfigHelper.addExhaustionOverTimeEnabled) {
                 tickCounterExhaustion += 1;
