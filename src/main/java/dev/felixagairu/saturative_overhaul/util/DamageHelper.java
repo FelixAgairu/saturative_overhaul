@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 import static dev.felixagairu.saturative_overhaul.Saturative.LOGGER;
 /*? >=1.21.2 {*/
 
-import net.minecraft.server.network.ServerPlayerEntity;
+/*import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 *//*?} else >=1.21.1 {*/
 import net.minecraft.world.World;
