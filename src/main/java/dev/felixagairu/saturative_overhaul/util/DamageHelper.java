@@ -22,18 +22,18 @@ import net.minecraft.util.Identifier;
 import static dev.felixagairu.saturative_overhaul.Saturative.LOGGER;
 /*? >=1.21.2 {*/
 
-import net.minecraft.server.network.ServerPlayerEntity;
+/*import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-/*?} else >=1.21.1 {*/
-/*import net.minecraft.world.World;
-*//*?}*/
+*//*?} else >=1.21.1 {*/
+import net.minecraft.world.World;
+/*?}*/
 
 
 public class DamageHelper {
     private static boolean HAS_ERROR = false;
 
     public static DamageSource damageSourceFromString(
-            /*? >=1.21.2 {*/ServerWorld world,/*?} else >=1.21.1 {*//*World world,*//*?}*/
+            /*? >=1.21.2 {*//*ServerWorld world,*//*?} else >=1.21.1 {*/World world,/*?}*/
             String inId,
             String defaultId
     ) {
@@ -44,7 +44,7 @@ public class DamageHelper {
         RegistryKey<DamageType> defaultKey = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, idDefault);
 
         /*? >=1.21.2 {*/
-        // RegistryEntryLookup<DamageType> lookup
+        /*// RegistryEntryLookup<DamageType> lookup
         var lookup = world.getRegistryManager()
                 .getOrThrow(RegistryKeys.DAMAGE_TYPE);
 
@@ -65,8 +65,8 @@ public class DamageHelper {
             entry = lookup.getOptional(defaultKey).orElse(lookup.getOptional(DamageTypes.STARVE).get());
         }
         return new DamageSource(entry);
-        /*?} else >=1.21.1 {*/
-        /*// Registry<DamageType> registry
+        *//*?} else >=1.21.1 {*/
+        // Registry<DamageType> registry
         var registry = world.getRegistryManager()
                 .get(RegistryKeys.DAMAGE_TYPE);
 
@@ -91,29 +91,29 @@ public class DamageHelper {
         }
 
         return new DamageSource(entry);
-        *//*?} else {*/
+        /*?} else {*/
         /*?}*/
     }
 
     public static void doEffectDamage(
-            /*? >=1.21.2 {*/ServerWorld world,/*?} else >=1.21.1 {*//*World world,*//*?}*/
-            /*? >=1.21.2 {*/ServerPlayerEntity player,/*?} else >=1.21.1 {*//*PlayerEntity player,*//*?}*/
+            /*? >=1.21.2 {*//*ServerWorld world,*//*?} else >=1.21.1 {*/World world,/*?}*/
+            /*? >=1.21.2 {*//*ServerPlayerEntity player,*//*?} else >=1.21.1 {*/PlayerEntity player,/*?}*/
             String inId,
             float amount,
             String defaultId
     ) {
         /*? >=1.21.2 {*/
-        player.damage(
+        /*player.damage(
                 WorldPlayerUtils.getWorld(player),
                 damageSourceFromString(world, inId, defaultId),
                 amount
         );
-        /*?} else >=1.21.1 {*/
-        /*player.damage(
+        *//*?} else >=1.21.1 {*/
+        player.damage(
                 damageSourceFromString(world, inId, defaultId),
                 amount
         );
-        *//*?} else {*/
+        /*?} else {*/
         /*?}*/
 
     }

@@ -17,8 +17,8 @@ import dev.felixagairu.saturative_overhaul.util.ConfigHelper;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 /*? >=1.21.2 {*/
-import net.minecraft.client.render.RenderLayer;
-/*?}*/
+/*import net.minecraft.client.render.RenderLayer;
+*//*?}*/
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,7 +70,7 @@ public abstract class InGameHudMixin {
     }
 
     /*? >=1.21.2 {*/
-    @Unique
+    /*@Unique
     private static int premultiply(float r, float g, float b, float a) {
         int ia = (int)(a * 255);
         int ir = (int)(r * a * 255);
@@ -78,7 +78,7 @@ public abstract class InGameHudMixin {
         int ib = (int)(b * a * 255);
 
         return (ia << 24) | (ir << 16) | (ig << 8) | ib;
-    }/*?}*/
+    }*//*?}*/
 
     @Unique
     private void renderFood(DrawContext context, PlayerEntity player, int top, int right) {
@@ -190,13 +190,13 @@ public abstract class InGameHudMixin {
             boolean isUV
     ) {
         /*? >=1.21.2 {*/
-        // Alpha‑aware, premultiplied ARGB
+        /*// Alpha‑aware, premultiplied ARGB
         int color = premultiply(r, g, b, a);
 
         if (isUV) {
             context.drawGuiTexture(
-                    /*? >=1.21.6 {*/
-                    /*RenderPipelines.GUI_TEXTURED,
+                    /^? >=1.21.6 {^/
+                    /^RenderPipelines.GUI_TEXTURED,
                     icon,
                     Math.max(width, height),
                     Math.max(width, height),
@@ -205,7 +205,7 @@ public abstract class InGameHudMixin {
                     Math.max(width, height),
                     Math.max(width, height),
                     color
-                    *//*?} else >= 1.21.1 {*/
+                    ^//^?} else >= 1.21.1 {^/
                     RenderLayer::getGuiTextured,
                     icon,
                     Math.max(width, height),
@@ -214,32 +214,32 @@ public abstract class InGameHudMixin {
                     x, y,
                     Math.max(width, height),
                     Math.max(width, height)
-                    /*?}*/
+                    /^?}^/
             );
         } else {
             context.enableScissor(x, y, x + width, y + height);
 
             context.drawGuiTexture(
-                    /*? >=1.21.6 {*/
-                    /*RenderPipelines.GUI_TEXTURED,
+                    /^? >=1.21.6 {^/
+                    /^RenderPipelines.GUI_TEXTURED,
                     icon,
                     x, y,
                     Math.max(width, height),
                     Math.max(width, height),
                     color
-                    *//*?} else >= 1.21.1 {*/
+                    ^//^?} else >= 1.21.1 {^/
                     RenderLayer::getGuiTextured,
                     icon,
                     x, y,
                     Math.max(width, height),
                     Math.max(width, height),
                     color
-                    /*?}*/
+                    /^?}^/
             );
         }
         context.disableScissor();
-        /*?} else >=1.21.1 {*/
-        /*context.setShaderColor(r, g, b, a);
+        *//*?} else >=1.21.1 {*/
+        context.setShaderColor(r, g, b, a);
 
         if (isUV) {
             context.drawTexture(icon, x, y, u, v, width, height);
@@ -250,6 +250,6 @@ public abstract class InGameHudMixin {
         }
 
         context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        *//*?}*/
+        /*?}*/
     }
 }

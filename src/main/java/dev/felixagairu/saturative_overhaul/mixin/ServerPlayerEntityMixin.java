@@ -6,8 +6,8 @@ import dev.felixagairu.saturative_overhaul.util.MathHelper;
 import net.minecraft.entity.player.HungerManager;
 
 /*? 1.21.1 {*/
-/*import net.minecraft.entity.player.PlayerEntity;
-*//*?}*/
+import net.minecraft.entity.player.PlayerEntity;
+/*?}*/
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -46,10 +46,10 @@ public abstract class ServerPlayerEntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         /*? <=1.21.1 {*/
-        /*PlayerEntity player = (PlayerEntity)(Object)this;
-        *//*?} else <=1.21.11 {*/
-        ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
-        /*?} else {*//*
+        PlayerEntity player = (PlayerEntity)(Object)this;
+        /*?} else <=1.21.11 {*/
+        /*ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+        *//*?} else {*//*
         *//*?}*/
         boolean check =
                 !WorldPlayerUtils.isCreative(player)

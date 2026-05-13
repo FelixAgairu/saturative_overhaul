@@ -16,10 +16,10 @@ import dev.felixagairu.saturative_overhaul.util.*;
 import net.minecraft.entity.player.HungerManager;
 
 /*? >=1.21.2 {*/
-import net.minecraft.server.network.ServerPlayerEntity;
-/*?} else >= 1.21.1 {*/
-/*import net.minecraft.entity.player.PlayerEntity;
-*//*?}*/
+/*import net.minecraft.server.network.ServerPlayerEntity;
+*//*?} else >= 1.21.1 {*/
+import net.minecraft.entity.player.PlayerEntity;
+/*?}*/
 
 import net.minecraft.world.Difficulty;
 
@@ -65,9 +65,9 @@ public abstract class HungerManagerMixin {
     @Shadow
     private int foodTickTimer;
     /*? 1.21.1 {*/
-    /*@Shadow
+    @Shadow
     private int prevFoodLevel;
-    *//*?}*/
+    /*?}*/
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
@@ -148,12 +148,12 @@ public abstract class HungerManagerMixin {
             method = "update",
             at = @At("HEAD")
     )
-    public void modHeadUpdate(/*? >=1.21.2 {*/ServerPlayerEntity/*?} else >=1.21.1 {*//*PlayerEntity*//*?}*/ player, CallbackInfo ci) {
+    public void modHeadUpdate(/*? >=1.21.2 {*//*ServerPlayerEntity*//*?} else >=1.21.1 {*/PlayerEntity/*?}*/ player, CallbackInfo ci) {
         Difficulty difficulty = WorldPlayerUtils.getDifficulty(player);
         boolean naturalRegenerative = WorldPlayerUtils.isNaturalRegenerative(player);
         /*? 1.21.1 {*/
-        /*prevFoodLevel = foodLevel;
-        *//*?}*/
+        prevFoodLevel = foodLevel;
+        /*?}*/
 
         boolean foodCurable = player.canFoodHeal();
 
