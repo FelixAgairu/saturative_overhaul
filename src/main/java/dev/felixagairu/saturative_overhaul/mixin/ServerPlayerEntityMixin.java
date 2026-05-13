@@ -1,6 +1,7 @@
 package dev.felixagairu.saturative_overhaul.mixin;
 
 import dev.felixagairu.saturative_overhaul.util.ConfigHelper;
+import dev.felixagairu.saturative_overhaul.util.LogHelper;
 import dev.felixagairu.saturative_overhaul.util.WorldPlayerUtils;
 import dev.felixagairu.saturative_overhaul.util.MathHelper;
 import net.minecraft.entity.player.HungerManager;
@@ -39,7 +40,7 @@ public abstract class ServerPlayerEntityMixin {
     @Unique
     private int tickIntervalExhaustion = 20;
     @Unique
-    private int reducedFoodLevel = 0;
+    private int newFoodLevel = 0;
     @Unique
     private float newExhaustion = 0.0f;
 
@@ -51,19 +52,18 @@ public abstract class ServerPlayerEntityMixin {
         /*ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         *//*?} else {*//*
         *//*?}*/
+        HungerManager hungerManager = player.getHungerManager();
+
         boolean check =
                 !WorldPlayerUtils.isCreative(player)
              && !WorldPlayerUtils.isPeaceful(player)
              && WorldPlayerUtils.isNaturalRegenerative(player);
 
         if (check) {
-            HungerManager hungerManager = player.getHungerManager();
-
             if (ConfigHelper.decreaseFoodLevelOverTimeEnabled) {
-                int foodLevel = hungerManager.getFoodLevel();
                 tickCounterFoodLevel += 1;
 
-                if (tickCounterFoodLevel >= tickIntervalFoodLevel && foodLevel > 1) {
+                if (tickCounterFoodLevel >= tickIntervalFoodLevel && hungerManager.getFoodLevel() > 1) {
                     // Random ticks or not
                     if (ConfigHelper.randomDecreaseFoodLevelEnabled) {
                         // Get next random ticks
@@ -81,22 +81,21 @@ public abstract class ServerPlayerEntityMixin {
                     //int newFoodLevel
                     if (ConfigHelper.decreaseRandomFoodLevelEnabled) {
                         // Get random food level
-                        reducedFoodLevel = MathHelper.clampFoodLevel(MathHelper.generateRandom(
+                        newFoodLevel = MathHelper.clampFoodLevel(MathHelper.generateRandom(
                                 ConfigHelper.decreaseFoodLevelBaseAmounts,
                                 ConfigHelper.decreaseFoodLevelMinMultiplier,
                                 ConfigHelper.decreaseFoodLevelMaxMultiplier
                         ));
                     } else {
                         // Get fixed food level
-                        reducedFoodLevel = MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
+                        newFoodLevel = MathHelper.clampFoodLevel(ConfigHelper.decreaseFoodLevelBaseAmounts);
                     }
                     // Reset counter
                     tickCounterFoodLevel = 0;
                     // Set food level
-                    hungerManager.setFoodLevel(Math.max(foodLevel - reducedFoodLevel, 0));
+                    hungerManager.setFoodLevel(hungerManager.getFoodLevel() - newFoodLevel);
                 }
             }
-
             // Add exhaustion or not
             if (ConfigHelper.addExhaustionOverTimeEnabled) {
                 tickCounterExhaustion += 1;
